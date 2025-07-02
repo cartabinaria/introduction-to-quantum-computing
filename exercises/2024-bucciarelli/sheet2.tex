@@ -1,0 +1,255 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+
+
+
+% Useful packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter\bra{\langle}{\rvert}
+\DeclarePairedDelimiter\ket{\lvert}{\rangle}
+\DeclarePairedDelimiterX\braket[2]{\langle}{\rangle}{#1\,\delimsize\vert\,\mathopen{}#2}
+
+\usepackage{tikz}
+\usetikzlibrary{quantikz2}
+
+
+\title{
+Introduction to Quantum Computing \\  Exercise Sheet 2}
+
+\author{Stefano Bucciarelli}
+
+\begin{document}
+\maketitle
+
+\textbf{Exercise 1.} \\
+
+As suggested, I check the behavior of the two circuits over the basic states: \\
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\psi_{\col}^{ij}}\rangle$,slice style=red,slice label
+style={}]
+\ket{i} & \gate{H} & \ctrl{1} & \gate{H} & \\
+\ket{j} & \gate{H} & \gate{X} & \gate{H} & 
+\end{quantikz}
+
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\psi_{4}^{ij}}\rangle$,slice style=red,slice label
+style={}]
+\ket{i} & \gate{X} & \\
+\ket{j} & \ctrl{-1} &
+\end{quantikz}
+
+I first compute the $CNOT$ on Hadamard's basis, which is helpful then.
+\[CNOT \ket{+}\ket{+}  =  \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} :
+    
+\right)\begin{pmatrix} \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix} \\ \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{2} \\ \frac{1}{2} \\ \frac{1}{2} \\ \frac{1}{2}  \end{pmatrix} = \begin{pmatrix} \frac{1}{2} \\ \frac{1}{2} \\ \frac{1}{2} \\ \frac{1}{2}  \end{pmatrix} = \ket{+}\ket{+} \]
+
+
+\[CNOT \ket{+}\ket{-}  =  \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{pmatrix} \\ \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{2} \\ -\frac{1}{2} \\ \frac{1}{2} \\ -\frac{1}{2}  \end{pmatrix} = \begin{pmatrix} \frac{1}{2} \\ -\frac{1}{2} \\ -\frac{1}{2} \\ \frac{1}{2}  \end{pmatrix} = \ket{-}\ket{-} \]
+
+
+\[CNOT \ket{-}\ket{+}  =  \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix} \\ - \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{2} \\ \frac{1}{2} \\ -\frac{1}{2} \\ -\frac{1}{2}  \end{pmatrix} = \begin{pmatrix} \frac{1}{2} \\ \frac{1}{2} \\ -\frac{1}{2} \\ -\frac{1}{2}  \end{pmatrix} = \ket{-}\ket{+}\]
+
+
+\[CNOT \ket{-}\ket{-}  =  \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{pmatrix} \\ - \frac{1}{\sqrt{2}} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0\\
+        0 & 1 & 0 & 0\\
+        0 & 0 & 0 & 1\\
+        0 & 0 & 1 & 0
+    \end{array} 
+\right)\begin{pmatrix} \frac{1}{2} \\ -\frac{1}{2} \\ -\frac{1}{2} \\ \frac{1}{2}  \end{pmatrix} = \begin{pmatrix} \frac{1}{2} \\ -\frac{1}{2} \\ \frac{1}{2} \\ -\frac{1}{2}  \end{pmatrix} = \ket{+}\ket{-}\]
+Now for $i,j \in [0,1]$ I compute $\psi_{1}^{ij}, \psi_{2}^{ij}, \psi_{3}^{ij}, \psi_{4}^{ij}$ and compare $\psi_{3}^{ij}$ with $\psi_{4}^{ij}$
+
+\[\psi_{1}^{00} = H\ket{0} \otimes H\ket{0} = \ket{+}\ket{+}\]
+\[\psi_{2}^{00} = CNOT \ket{+}\ket{+} = \ket{+}\ket{+}\]
+\[\psi_{3}^{00} = H\ket{+}H\ket{+} = \ket{0}\ket{0}\]
+\[\psi_{4}^{00} = \ket{0}\ket{0} \] \\
+ In $\psi_{4}^{00}$ the first qubit is unchanged because the control (second) qubit is $\ket{0}$. So $\psi_{3}^{00}$ is equal to $\psi_{4}^{00}$.
+ \\
+\[\psi_{1}^{01} = H\ket{0} \otimes H\ket{1} = \ket{+}\ket{-}\]
+\[\psi_{2}^{01} = CNOT \ket{+}\ket{-} = \ket{-}\ket{-}\]
+\[\psi_{3}^{01} = H\ket{-}H\ket{-} = \ket{1}\ket{1}\]
+\\
+\[\psi_{4}^{01} = (NOT\ket{0})\ket{1} = \ket{1}\ket{1} \] In $\psi_{4}^{01}$ the first qubit is changed because the control (second) qubit is $\ket{1}$. So $\psi_{3}^{01}$ is equal to $\psi_{4}^{01}$.
+\\
+\[\psi_{1}^{10} = H\ket{1} \otimes H\ket{0} = \ket{-}\ket{+}\]
+\[\psi_{2}^{10} = CNOT \ket{-}\ket{-+} = \ket{-}\ket{+}\]
+\[\psi_{3}^{10} = H\ket{-}H\ket{+} = \ket{1}\ket{0}\]
+
+\[\psi_{4}^{10} = \ket{1}\ket{0} \] In $\psi_{4}^{10}$ the first qubit is unchanged because the control (second) qubit is $\ket{0}$. So $\psi_{3}^{10}$ is equal to $\psi_{4}^{10}$.
+\\
+
+\[\psi_{1}^{11} = H\ket{1} \otimes H\ket{1} = \ket{-}\ket{-}\]
+\[\psi_{2}^{11} = CNOT \ket{-}\ket{-} = \ket{+}\ket{-}\]
+\[\psi_{3}^{11} = H\ket{+}H\ket{-} = \ket{0}\ket{1}\]
+
+\[\psi_{4}^{11} = (NOT\ket{1})\ket{1} = \ket{0}\ket{1} \] In $\psi_{4}^{11}$ the first qubit is changed because the control (second) qubit is $\ket{1}$. So $\psi_{3}^{11}$ is equal to $\psi_{4}^{11}$.\\
+
+The process is the same for the other circuit.\\
+
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\psi_{\col}^{ij}}\rangle$,slice style=red,slice label
+style={}]
+\ket{i} & \gate{H} & \ctrl{1} & & \gate{H} & \\
+\ket{j} & \gate{H} & \gate{X} & \gate{X} & \gate{H} & 
+\end{quantikz}
+
+\begin{quantikz}[slice
+titles=$\lvert{\psi_{\col}^{ij}}\rangle$,slice style=blue,slice label
+style={}]
+\ket{i} & \gate{X} \slice{$\lvert{\psi_{5}^{ij}}\rangle$}  & \slice{$\lvert{\psi_{6}^{ij}}\rangle$} & \\
+\ket{j} & \ctrl{-1} & \gate{Z} & 
+\end{quantikz}
+
+For $i,j \in [0,1]$ I compute $\psi_{1}^{ij}, \psi_{2}^{ij}, \psi_{3}^{ij}, \psi_{4}^{ij}, \psi_{5}^{ij}, \psi_{6}^{ij}, $ and compare $\psi_{4}^{ij}$ with $\psi_{6}^{ij}$, recalling that $NOT$ has eigenvector $\ket{+}$ and $\ket{-}$ with respective eigenvalues $1$ and $-1$, so $NOT\ket{+} = \ket{+}$ and $NOT\ket{-} = -\ket{-}$
+
+\[\psi_{1}^{00} = H\ket{0} \otimes H\ket{0} = \ket{+}\ket{+}\]
+\[\psi_{2}^{00} = CNOT \ket{+}\ket{+} = \ket{+}\ket{+}\]
+\[\psi_{3}^{00} = \ket{+}NOT\ket{+} = \ket{+}\ket{+}\]
+\[\psi_{4}^{00} = H\ket{+}H\ket{+} = \ket{0}\ket{0}\]
+\\
+\[\psi_{5}^{00} = \ket{0}\ket{0} \]
+\[\psi_{6}^{00} = \ket{0}(Z\ket{0}) = \ket{0}\ket{0} \]
+So $\psi_{4}^{00}$ is equal to $\psi_{6}^{00}$\\
+
+\[\psi_{1}^{01} = H\ket{0} \otimes H\ket{1} = \ket{+}\ket{-}\]
+\[\psi_{2}^{01} = CNOT \ket{+}\ket{-} = \ket{-}\ket{-}\]
+\[\psi_{3}^{01} = \ket{-}NOT\ket{-} = \ket{-}(-\ket{-})\]
+\[\psi_{4}^{01} = H\ket{-}H(-\ket{-}) = \ket{1}(-\ket{1})\]
+\\
+\[\psi_{5}^{01} = \ket{0}\ket{1} \]
+\[\psi_{6}^{01} = \ket{1}(Z\ket{1}) = \ket{1}(-\ket{1}) \]
+So $\psi_{4}^{01}$ is equal to $\psi_{6}^{01}$\\
+
+\[\psi_{1}^{10} = H\ket{1} \otimes H\ket{0} = \ket{-}\ket{+}\]
+\[\psi_{2}^{10} = CNOT \ket{-}\ket{+} = \ket{-}\ket{+}\]
+\[\psi_{3}^{10} = \ket{-}NOT\ket{+} = \ket{-}\ket{+}\]
+\[\psi_{4}^{10} = H\ket{-}H\ket{+} = \ket{1}\ket{0}\]
+\\
+\[\psi_{5}^{10} = \ket{1}\ket{0} \]
+\[\psi_{6}^{10} = \ket{1}(Z\ket{0}) = \ket{1}\ket{0} \]
+So $\psi_{4}^{10}$ is equal to $\psi_{6}^{10}$\\
+
+\[\psi_{1}^{11} = H\ket{1} \otimes H\ket{1} = \ket{-}\ket{-}\]
+\[\psi_{2}^{11} = CNOT \ket{-}\ket{-} = \ket{+}\ket{-}\]
+\[\psi_{3}^{11} = \ket{+}NOT\ket{-} = \ket{+}(-\ket{-})\]
+\[\psi_{4}^{11} = H\ket{+}H(-\ket{-}) = \ket{0}(-\ket{1})\]
+\\
+\[\psi_{5}^{11} = \ket{1}\ket{1} \]
+\[\psi_{6}^{11} = \ket{0}(Z\ket{1}) = \ket{0}(-\ket{1}) \]
+So $\psi_{4}^{11}$ is equal to $\psi_{6}^{11}$\\
+
+I now demonstrate that, if two quantum circuits have the same behavior over the basis states, then they will have the same behavior for each qubit in input.
+
+Let's consider these quantum circuits: \\
+
+\begin{quantikz}
+\ket{q_{0}} & \gate[2]{U} & \\
+\ket{q_{1}} &&
+\end{quantikz}
+\begin{quantikz}
+\ket{q_{0}} & \gate[2]{U'} & \\
+\ket{q_{1}} &&
+\end{quantikz}
+
+That have the same behaviour over basis states where $\ket{q_0} = \alpha_0 \ket{0} + \beta_0 \ket{1}$ and $\ket{q_1} = \alpha_1 \ket{0} + \beta_1 \ket{1}$
+
+So the first circuit perform 
+\[U\ket{q_0}\ket{q_1} = U [(\alpha_0 \ket{0} + \beta_0 \ket{1})\otimes(\alpha_1 \ket{0} + \beta_1 \ket{1})] = U (\alpha_0\alpha_1 \ket{0}\ket{0} + \alpha_0\beta_1 \ket{0}\ket{1} + \alpha_1\beta_0 \ket{1}\ket{0} + \alpha_1\beta_1 \ket{1}\ket{1}) = \]
+\[\alpha_0\alpha_1 U\ket{0}\ket{0} + \alpha_0\beta_1 U\ket{0}\ket{1} + \alpha_1\beta_0 U\ket{1}\ket{0} + \alpha_1\beta_1 U\ket{1}\ket{1} = \alpha_0\alpha_1 U'\ket{0}\ket{0} + \alpha_0\beta_1 U'\ket{0}\ket{1} + \alpha_1\beta_0 U'\ket{1}\ket{0} + \alpha_1\beta_1 U'\ket{1}\ket{1} = \]
+\[U' (\alpha_0\alpha_1 \ket{0}\ket{0} + \alpha_0\beta_1 \ket{0}\ket{1} + \alpha_1\beta_0 \ket{1}\ket{0} + \alpha_1\beta_1 \ket{1}\ket{1}) = U' [(\alpha_0 \ket{0} + \beta_0 \ket{1})\otimes(\alpha_1 \ket{0} + \beta_1 \ket{1})] = U'\ket{q_0}\ket{q_1}\]
+
+The two generic circuits are equals, so the initial circuits compute the same operation.
+
+\pagebreak
+
+\textbf{Exercise 2.} \\
+
+In the Deutsch circuit of a f function, that return $\ket{1}$ on the first qubit if and only if $f(0) = f(1)$:
+
+\begin{quantikz}
+\ket{0} & \gate{H} & \gate[2]{U_f} & \gate{H} & \\
+\ket{-} &&&&
+\end{quantikz}
+
+Since we need to perform a parity measure, we must change the second qubit in order to entangle it with the first.\\
+
+So the solution proposed is 
+
+\begin{quantikz}
+\ket{0} & \gate{H} & \gate[2]{U_f} \slice{$\lvert{\psi_1}\rangle$} & \ctrl{1} \slice{$\lvert{\psi_2}\rangle$}  &\gate{H} & \slice{$\lvert{\psi_3}\rangle$} & \\
+\ket{-} &&&\gate{X}&\gate{H} &&
+\end{quantikz}\\
+
+So considering $f$ as constant ($f(0) = f(1)$) it is \\
+$\ket{\psi_1} = \ket{+}\ket{-}$ simply is the same respect Deuscht algorithm \\
+$\ket{\psi_2} = CNOT\ket{+}\ket{-} = \ket{-}\ket{-} $ as seen previously\\
+$\ket{\psi_3} = H\ket{-}H\ket{-} = \ket{1}\ket{1}$ \\ so if f is constant the parity measurement yield 0 with probability 1.\\
+
+If f is not constant ($f(0) \neq f(1)$) it is \\
+$\ket{\psi_1} = \ket{-}\ket{-}$ simply is the same respect Deuscht algorithm \\
+$\ket{\psi_2} = CNOT\ket{-}\ket{-} = \ket{+}\ket{-} $ as seen previously\\
+$\ket{\psi_3} = H\ket{+}H\ket{-} = \ket{1}\ket{0}$ \\ so if f is not constant the parity measurement yield 1 with probability 1.
+ck
+\end{document}

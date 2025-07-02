@@ -1,0 +1,431 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins●●●●●●●●●●●●●
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter\bra{\langle}{\rvert}
+\DeclarePairedDelimiter\ket{\lvert}{\rangle}
+\DeclarePairedDelimiterX\braket[2]{\langle}{\rangle}{#1\,\delimsize\vert\,\mathopen{}#2}
+
+\title{
+Introduction to Quantum Computing \\  Exercise Sheet 1}
+
+\author{Stefano Bucciarelli}
+
+\begin{document}
+\maketitle
+
+\textbf{Exercise 1.} \\
+
+\(z = 1 - i\) \\
+
+I want to represent \(z\) in these forms
+\begin{itemize}
+    \item \(z = |z|(\cos \theta + i \sin \theta)\).
+    \item \(z = |z|e^{i\theta}\)
+\end{itemize} 
+
+Calculation of \(|z|\)
+
+\[|z| = | 1 - i | = \sqrt{1^2 + \left(-1\right)^2} = \sqrt{2} \]
+
+Calculation of \(\theta\)
+
+\[ 
+\begin{cases} z=\sqrt{2}\left(\cos \theta + i \sin \theta\right) \\ z = 1 - i \end{cases} = 
+\begin{cases} z=\sqrt{2}\cos\theta + i\sqrt{2} \sin \theta \\ z = 1 - i \end{cases} = 
+\begin{cases} \sqrt{2}\cos\theta + i\sqrt{2} \sin \theta = 1 - i \\ z = 1 - i \end{cases} = \]
+\[
+\begin{cases} \sqrt{2}\cos\theta = 1 \\ \sqrt{2} \sin \theta = 1 \end{cases} = 
+\begin{cases} \cos\theta = \frac{1}{\sqrt{2}} \\ \sin \theta = -\frac{1}{\sqrt{2}}\end{cases}  \Rightarrow
+\theta = - \frac{\pi}{4}
+\]
+
+Knowing \(|z|\) and \(\theta\) I can transcribe trigonometric and exponential forms \\
+
+So the trigonometric form is
+\[z = \sqrt{2}(\cos (- \frac{\pi}{4}) + i \sin (- \frac{\pi}{4})) = \sqrt{2}(\cos  \frac{\pi}{4} - i \sin \frac{\pi}{4}) \]
+
+And the exponential form is
+\[z = \sqrt{2}e^{-i \frac{\pi}{4}}\] \\
+
+\(z = \frac{2}{\sqrt{3} + i} = \frac{2}{\sqrt{3} + i} \frac{\sqrt{3} - i}{\sqrt{3} - i} = \frac{2(\sqrt{3} - i)}{4} = \frac{\sqrt{3}}{2} - \frac{i}{2}\) \\
+
+I want to represent \(z\) in these forms
+\begin{itemize}
+    \item \(z = |z|(\cos \theta + i \sin \theta)\).
+    \item \(z = |z|e^{i\theta}\)
+\end{itemize} 
+
+Calculation of \(|z|\)
+
+\[|z| = |\frac{\sqrt{3}}{2} - \frac{i}{2}| = \sqrt{\left(\frac{\sqrt{3}}{2}\right)^2 + \left(\frac{i}{2}\right)^2} = \sqrt{\left(\frac{3}{4}\right) + \left(\frac{1}{4}\right)} = \sqrt{1} = 1 \]
+
+Calculation of \(\theta\)
+
+\[ 
+\begin{cases} z=1(\cos \theta + i \sin \theta) \\ z = \frac{\sqrt{3}}{2} - \frac{i}{2} \end{cases} = 
+\begin{cases} \cos \theta + i \sin \theta = \frac{\sqrt{3}}{2} - \frac{i}{2} \\ z = \frac{\sqrt{3}}{2} - \frac{i}{2} \end{cases} = 
+\begin{cases} \cos \theta = \frac{\sqrt{3}}{2} \\ \sin \theta = - \frac{1}{2} \end{cases} \Rightarrow
+\theta = - \frac{\pi}{6}
+\]
+
+So the trigonometric form is
+\[z = \cos \left(- \frac{\pi}{6}\right) + i \sin \left(- \frac{\pi}{6}\right) = \cos  \frac{\pi}{6} - i \sin \frac{\pi}{6} \]
+
+And the exponential form is
+\[z = e^{-i \frac{\pi}{6}}\] \\
+\pagebreak
+
+\textbf{Exercise 2.}\\
+
+The 5-th roots of unity are the complex numbers \(z\) which \(z^5 = 1\). I already know that these are all and only the complex numbers of the form
+\(z = e^{2 \pi i \frac{k}{5}}\) for \(k = 1,...,n\). \\
+
+So \(5roots\) which contains all 5-th roots of unity is
+
+\[5roots = 
+\{ e^{2 \pi i \frac{1}{5}}, e^{2 \pi i \frac{2}{5}}, e^{2 \pi i \frac{3}{5}}, e^{2 \pi i \frac{4}{5}}, e^{2 \pi i \frac{5}{5}}\} =
+\{e^{\frac{2}{5} \pi i }, e^{ \frac{4}{5} \pi i}, e^{ \frac{6}{5} \pi i}, e^{ \frac{8}{5} \pi i}, e^{2 \pi i }\} \]
+
+Before computing the value of elements in \(5roots\) I write some goniometric formulas that will be used later
+
+\begin{itemize}
+    \item \(\sin x = \sqrt{1 - \cos^2 x}\)
+    \item \(\cos 2x = 2 \cos^2 x - 1\)
+    \item \(\sin 2x = 2\sin x \ \cos x\)
+    \item \(\cos \left(2 \pi - x\right) = \cos x \)
+    \item \(\sin \left(2 \pi - x\right) = - \sin x \)
+\end{itemize}
+
+So let's compute the 5-th roots of unity 
+
+\begin{enumerate}
+    \item \(e^{\frac{2}{5} \pi i } = 
+        \cos \left( \frac{2}{5} \pi \right) + i \sin \left( \frac{2}{5} \pi \right) = \) \\
+        \( \frac{\sqrt{5} - 1}{4} + i \sqrt{1 - \cos^2 \left( \frac{2}{5} \pi \right) } = \) \\
+        \( \frac{\sqrt{5} - 1}{4} + i \sqrt{1 - \left( \frac{\sqrt{5} - 1}{4}  \right)^2 } =  \) \\
+        \( \frac{\sqrt{5} - 1}{4} + i \sqrt{1 - \left( \frac{6 -2 \sqrt{5} }{16}  \right) } = \) \\
+        \(  \frac{\sqrt{5} - 1}{4} + i \sqrt{1 - \frac{2 \left(3 - \sqrt{5}\right) }{16} } = \) \\
+       \(  \frac{\sqrt{5} - 1}{4} + i \sqrt{1 - \frac{3 - \sqrt{5}}{8} } = \) \\
+        \( \frac{\sqrt{5} - 1}{4} + i \sqrt{ \frac{8 -3 + \sqrt{5}}{8} } = \) \\
+        \( \frac{\sqrt{5} - 1}{4} + i \sqrt{ \frac{5 + \sqrt{5}}{8} }
+        \)
+    \item \(e^{\frac{4}{5} \pi i } = 
+        \cos \left( \frac{4}{5} \pi \right) + i \sin \left( \frac{4}{5} \pi \right) = \) \\
+        \( \cos 2\left( \frac{2}{5} \pi \right) + i \sin 2\left( \frac{2}{5} \pi \right) = \) \\
+        \( 2 \cos^2\left( \frac{2}{5} \pi \right) - 1 + i 2 \sin \left( \frac{2}{5} \pi \right) \cos \left( \frac{2}{5} \pi \right) = \) \\
+        \( 2 (\frac{3 - \sqrt{5}}{8}) - 1 + i 2 \sqrt{ \frac{5 + \sqrt{5}}{8}} { \frac{\sqrt{5} - 1}{4}} = = = \) \\
+        \( 2 (\frac{3 - \sqrt{5}}{8}) - 1 + i 2 \sqrt{ \frac{5 + \sqrt{5}}{8}} { \frac{\sqrt{5} - 1}{4}} = = \) \\ %here do the sin simplification
+        \( \frac{3 - \sqrt{5}}{4} - 1 + i 2 \sqrt{ \frac{5 + \sqrt{5}}{8}  \left(\frac{\sqrt{5} - 1}{4}\right)^2} = \) \\
+        \( \frac{3 - \sqrt{5} - 4}{4} + i 2 \sqrt{ \frac{5 + \sqrt{5}}{8} \frac{3 - \sqrt{5}}{8}} = \) \\
+        \( \frac{-1 - \sqrt{5}}{4} + i \sqrt{ 4 \frac{5 + \sqrt{5}}{8} \frac{3 - \sqrt{5}}{8}} = \) \\
+        \(-\frac{1 + \sqrt{5}}{4}+ i \sqrt{ \frac{5 + \sqrt{5}}{8} \frac{3 - \sqrt{5}}{2}} = \) \\
+        \(-\frac{1 + \sqrt{5}}{4}+ i \sqrt{ \frac{15 -5 \sqrt{5} + 3\sqrt{5} - 5}{16}}  = \) \\
+        \(-\frac{1 + \sqrt{5}}{4}+ i \sqrt{ \frac{10 -2 \sqrt{5}}{16}}  = \) \\
+        \(-\frac{1 + \sqrt{5}}{4}+ i \sqrt{2 \frac{5 -\sqrt{5}}{16}}  = \) \\
+        \(-\frac{1 + \sqrt{5}}{4}+ i \sqrt{\frac{5 -\sqrt{5}}{8}}  \) 
+    \item \(e^{\frac{6}{5} \pi i } =
+        \cos \left( \frac{6}{5} \pi \right) + i \sin \left( \frac{6}{5} \pi \right) = \) \\
+        \(\cos \left( 2 \pi - \frac{4}{5} \pi \right) + i \sin \left( 2 \pi - \frac{4}{5} \pi \right) = \) \\
+        \(\cos \left( \frac{4}{5} \pi \right) - i \sin \left(\frac{4}{5} \pi \right) = \) \\
+        \(-\frac{1 + \sqrt{5}}{4} - i \sqrt{\frac{5 -\sqrt{5}}{8}}  \) 
+    \item \(e^{\frac{8}{5} \pi i } =\) 
+        \(\cos \left( \frac{8}{5} \pi \right) + i \sin \left( \frac{8}{5} \pi \right) = \) \\
+        \(\cos \left( 2 \pi - \frac{2}{5} \pi \right) + i \sin \left( 2 \pi - \frac{2}{5} \pi \right) = \) \\
+        \(\cos \left( \frac{2}{5} \pi \right) - i \sin \left(\frac{2}{5} \pi \right) = \) \\
+        \( \frac{\sqrt{5} - 1}{4} - i \sqrt{ \frac{5 + \sqrt{5}}{8} } \)
+    \item \(e^{2 \pi i } =\) 
+        \(\cos \left( 2 \pi \right) + i \sin \left( 2 \pi \right) = 1\) \\
+\end{enumerate}
+\pagebreak
+\\
+\textbf{Exercise 3.}\\
+
+\(
+\ket{101} = 
+\ket{1} \otimes \ket{0} \otimes \ket{1} = 
+\ket{1} \otimes \left(\ket{0} \otimes \ket{1}\right) =  
+\ket{1} \otimes \begin{pmatrix} 1 \begin{pmatrix} 0 \\ 1 \end{pmatrix} \\ 0  \begin{pmatrix} 0 \\ 1 \end{pmatrix} \end{pmatrix} =
+\ket{1} \otimes \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} =
+\begin{pmatrix} 0 \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} \\ 1 \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} \end{pmatrix} =
+\begin{pmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}
+\)
+
+\(
+\ket{01} \otimes \ket{0} = 
+\left( \ket{0} \otimes \ket{1} \right) \otimes \ket{0} = 
+\begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} \otimes \ket{0} =
+\begin{pmatrix} 0 \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\ 1 \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\ 0 \begin{pmatrix} 1 \\ 0 \end{pmatrix} \\ 0 \begin{pmatrix} 1 \\ 0 \end{pmatrix} \end{pmatrix} =
+\begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \end{pmatrix} = 
+\ket{010}
+\)
+
+\(
+\ket{111} = 
+\ket{1} \otimes \ket{1} \otimes \ket{1} = 
+\ket{1} \otimes \left(\ket{1} \otimes \ket{1}\right) =  
+\ket{1} \otimes \begin{pmatrix} 0 \begin{pmatrix} 0 \\ 1 \end{pmatrix} \\ 1  \begin{pmatrix} 0 \\ 1 \end{pmatrix} \end{pmatrix} =
+\ket{1} \otimes \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} =
+\begin{pmatrix} 0 \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} \\ 1 \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} \end{pmatrix} =
+\begin{pmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+\)
+
+\(
+\frac{1}{\sqrt{3}} \left(\ket{101} + \ket{010} + \ket{111} \right) = \frac{1}{\sqrt{3}} \begin{pmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} + \begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \end{pmatrix} +  \begin{pmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} = 
+\frac{1}{\sqrt{3}} \begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ 1 \\ 0 \\ 1 \end{pmatrix} =
+\begin{pmatrix} 0 \\ 0 \\ \frac{1}{\sqrt{3}}  \\ 0 \\ 0 \\ \frac{1}{\sqrt{3}}  \\ 0 \\ \frac{1}{\sqrt{3}}  \end{pmatrix}
+\)
+\pagebreak
+\\
+\textbf{Exercise 4.}\\
+
+To check if these vector are entangled I try to decompose every vector in the form
+
+\(
+\left( \alpha_{0} \ket{0} + \alpha_{1} \ket{1} \right) \otimes \left( \beta_{0} \ket{0} + \beta_{1} \ket{1} \right) \otimes \left( \gamma_{0} \ket{0} + \gamma_{1} \ket{1} \right) = \\
+\alpha_{0} \beta_{0} \gamma_{0} \ket{000} + 
+\alpha_{0} \beta_{0} \gamma_{1} \ket{001} + 
+\alpha_{0} \beta_{1} \gamma_{0} \ket{010} + 
+\alpha_{0} \beta_{1} \gamma_{1} \ket{011} + 
+\alpha_{1} \beta_{0} \gamma_{0} \ket{100} + 
+\alpha_{1} \beta_{0} \gamma_{1} \ket{101} +
+\alpha_{1} \beta_{1} \gamma_{0} \ket{110} +
+\alpha_{1} \beta_{1} \gamma_{1} \ket{111}
+\)
+
+\[
+\frac{1}{\sqrt{3}} \left(\ket{001} + \ket{111} + \ket{011} \right)
+\]
+
+\(
+\frac{1}{\sqrt{3}} \left(\ket{001} + \ket{111} + \ket{011} \right) \Rightarrow \begin{cases} 
+\alpha_{0} \beta_{0} \gamma_{0} = 0 \\
+\alpha_{0} \beta_{0} \gamma_{1} = \frac{1}{\sqrt{3}} \\
+\alpha_{0} \beta_{1} \gamma_{0} = 0 \\
+\alpha_{0} \beta_{1} \gamma_{1} = \frac{1}{\sqrt{3}} \\
+\alpha_{1} \beta_{0} \gamma_{0} = 0 \\
+\alpha_{1} \beta_{0} \gamma_{1} = 0 \\
+\alpha_{1} \beta_{1} \gamma_{0} = 0 \\
+\alpha_{1} \beta_{1} \gamma_{1} = \frac{1}{\sqrt{3}} 
+\end{cases}
+\Rightarrow
+\begin{cases} 
+ \gamma_{0} = 0 \\
+ \alpha_{0} \beta_{0} \neq 0 \\ 
+ \alpha_{0} \beta_{1} \neq 0 \\ 
+ \alpha_{1} \beta_{1} \neq 0 \\ 
+ \alpha_{1} \beta_{0} = 0 \Rightarrow \alpha_{1} = 0 ~or~ \beta_{0} = 0 \Rightarrow \alpha_{1} \beta_{1} = 0 ~or~ \alpha_{0} \beta_{0} = 0
+\end{cases}
+\) 
+\\
+\\
+But it is impossible to have \( \alpha_{1} \beta_{1} \neq 0\), \(\alpha_{0} \beta_{0} \neq 0 \) and \(\alpha_{1} \beta_{1} = 0 ~or~ \alpha_{0} \beta_{0} = 0\) so it is impossible to decompose the original the vector, so the vector is entangled
+\\
+\\
+\[
+\frac{1}{\sqrt{2}} \left(\ket{011} + \ket{100}\right)
+\] 
+
+\(
+\frac{1}{\sqrt{2}} \left(\ket{011} + \ket{100}\right) \Rightarrow \begin{cases} 
+\alpha_{0} \beta_{0} \gamma_{0} = 0 \\
+\alpha_{0} \beta_{0} \gamma_{1}  = 0 \\
+\alpha_{0} \beta_{1} \gamma_{0}  = 0 \\
+\alpha_{0} \beta_{1} \gamma_{1}  = \frac{1}{\sqrt{2}} \\
+\alpha_{1} \beta_{0} \gamma_{0}  = \frac{1}{\sqrt{2}} \\
+\alpha_{1} \beta_{0} \gamma_{1}  = 0 \\
+\alpha_{1} \beta_{1} \gamma_{0}  = 0 \\
+\alpha_{1} \beta_{1} \gamma_{1} = 0
+\end{cases}
+\Rightarrow
+\begin{cases} 
+\alpha_{0} \beta_{0} \gamma_{0} = 0 \\
+\alpha_{0} \beta_{1} \gamma_{1} = \frac{1}{\sqrt{2}} \\
+\alpha_{1} \beta_{0} \gamma_{0} = \frac{1}{\sqrt{2}} \\
+\end{cases}
+\Rightarrow
+\begin{cases} 
+\alpha_{0} = 0 ~or~ \beta_{0} = 0 ~or~ \gamma_{0} = 0 \\
+\alpha_{0} \neq 0 ~and~ \beta_{1} \neq 0 ~and~ \gamma_{1} \neq 0 \\
+\alpha_{1} \neq 0 ~and~ \beta_{0} \neq 0 ~and~ \gamma_{0} \neq 0 \\
+\end{cases}
+\Rightarrow
+\begin{cases} 
+\alpha_{0} = 0 ~or~ \beta_{0} = 0 ~or~ \gamma_{0} = 0 \\
+\alpha_{0} \neq 0 ~and~ \beta_{1} \neq 0 ~and~ \gamma_{0} \neq 0 \\
+\end{cases}
+\)
+\\
+\\
+
+But it is impossible to have \(\alpha_{0} = 0 ~or~ \beta_{0} = 0 ~or~ \gamma_{0} = 0\) and \(\alpha_{0} \neq 0 ~and~ \beta_{1} \neq 0 ~and~ \gamma_{0} \neq = 0\) so it is impossible to decompose the original the vector, so the vector is entangled
+\\
+\\
+\[
+\frac{1}{\sqrt{2}} \left(\ket{011} + \ket{101}\right)
+\] 
+
+\(
+\frac{1}{\sqrt{2}} \left(\ket{011} + \ket{101}\right) \Rightarrow \begin{cases} 
+\alpha_{0} \beta_{0} \gamma_{0} = 0 \\
+\alpha_{0} \beta_{0} \gamma_{1}  = 0 \\
+\alpha_{0} \beta_{1} \gamma_{0}  = 0 \\
+\alpha_{0} \beta_{1} \gamma_{1}  = \frac{1}{\sqrt{2}} \\
+\alpha_{1} \beta_{0} \gamma_{1}  = 0 \\
+\alpha_{1} \beta_{0} \gamma_{1}  = \frac{1}{\sqrt{2}} \\
+\alpha_{1} \beta_{1} \gamma_{0}  = 0 \\
+\alpha_{1} \beta_{1} \gamma_{1} = 0
+\end{cases}
+\Rightarrow
+\begin{cases} 
+\gamma_{0} = 0 \\
+\alpha_{0} \beta_{1} \gamma_{1} \neq 0 \\
+\alpha_{1} \beta_{0} \gamma_{1} \neq 0 \\
+\alpha_{0} \beta_{0} \gamma_{1} = 0 \\
+\alpha_{1} \beta_{1} \gamma_{1} = 0 \\
+\end{cases}
+\Rightarrow
+\begin{cases} 
+\alpha_{0} \beta_{1} \neq 0 \\
+\alpha_{1} \beta_{0} \neq 0 \\
+\alpha_{0} = 0 ~or~ \beta_{0} = 0 \\
+\alpha_{1} = 0 ~or~ \beta_{1} = 0 \\
+\end{cases}
+\) 
+\\
+\\
+There is no solution, because if \(\alpha_{0} = 0 ~or~ \beta_{0} = 0\) and \(\alpha_{1} = 0 ~or~ \beta_{1} = 0\) and \(\alpha_{0} \beta_{1} \neq 0 \) imply that \(\alpha_{0} \beta_{1} = 0\) but instead there is \(\alpha_{1} \beta_{0} \neq 0 \)
+\\
+But it is impossible to have \(\alpha_{0} = 0 ~or~ \beta_{0} = 0 ~or~ \gamma_{0} = 0\) and \(\alpha_{0} \neq 0 ~and~ \beta_{1} \neq 0 ~and~ \gamma_{0} \neq 0\) so it is impossible to decompose the original the vector, so the vector is entangled
+\pagebreak
+\\
+\textbf{Exercise 5.}
+\\\\
+\(
+\frac{1}{\sqrt{6}} \left(\ket{01}\bra{00} + 5 \ket{01}\bra{01} + 3 \ket{10}\bra{11} + 2i \ket{10}\bra{11}\right) \frac{1}{\sqrt{2}} \left(\ket{00} + \ket{11} \right) = \\\\
+\frac{1}{\sqrt{12}} 
+((\ket{01}\bra{00})\ket{00} + 5 (\ket{01}\bra{01})\ket{00} + 3 (\ket{10}\bra{11})\ket{00} + 2i (\ket{10}\bra{11})\ket{00} + (\ket{01}\bra{00})\ket{11} + 5 (\ket{01}\bra{01})\ket{11} + 3 (\ket{10}\bra{11})\ket{11} + 2i (\ket{10}\bra{11})\ket{11}) = \\\\
+\frac{1}{\sqrt{12}} ((\bra{00}\ket{00})\ket{01} + 5 (\bra{01}\ket{00})\ket{01} + 3 (\bra{11}\ket{00})\ket{10} + 2i (\bra{11}\ket{00})\ket{10} + (\bra{00}\ket{11})\ket{01} + 5 (\bra{01}\ket{11})\ket{01} + 3 (\bra{11}\ket{11})\ket{10} + 2i (\bra{11}\ket{11})\ket{10}) = \\\\
+\frac{1}{\sqrt{12}} (1 \ket{01} + 5 \cdot 0\ket{01} + 3 \cdot 0\ket{10} + 2i \cdot 0\ket{10} + 0\ket{01} + 5 \cdot 0\ket{01} + 3 \cdot 1\ket{10} + 2i \cdot 1\ket{10}) = \\\\
+\frac{1}{\sqrt{12}} (\ket{01} + 3\ket{10} + 2i \ket{10}) = \\\\
+\frac{1}{\sqrt{12}} \ket{01} + \frac{3 + 2i}{\sqrt{12}} \ket{10}
+\)
+\pagebreak
+\\
+\textbf{Exercise 6.}\\
+
+\[
+M= \left( 
+    \begin{array}{cc} 
+        1 & -1 \\
+        1 & 1
+    \end{array} 
+\right)
+\]
+\\
+For finding eigenvalues I find \(\lambda\) that resolve the equation \(det\left(\lambda I - M \right) = 0\)
+
+\[\lambda I - M = 
+\left( 
+    \begin{array}{cc} 
+       \lambda - 1 & 1 \\
+        -1 & \lambda - 1
+    \end{array} 
+\right)\]
+\\
+
+\[
+det\left(\lambda I - M \right) = 0 \Rightarrow
+(\lambda -1)(\lambda -1) + 1 = 0 \Rightarrow
+(\lambda - 1)^2 = -1 \Rightarrow
+\lambda - 1 = \pm i 
+\]
+\\
+So \(\lambda_{1} = 1 + i\), \(\lambda_{2} = 1 - i\)
+\\
+\\
+Considering eigenvalue \(\lambda_{1} = 1 + i\)
+
+\[\left(\lambda_1 I - M \right)\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \]
+\[
+\left( 
+    \begin{array}{cc} 
+       i & 1 \\
+       -1 & i
+    \end{array} 
+\right)\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \Rightarrow 
+\begin{cases} 
+y + ix =0 \\ 
+-x + iy = 0
+\end{cases} =
+\begin{cases} 
+y = -ix \\ 
+x = iy 
+\end{cases} 
+\]
+\\
+\\
+Orthonormal solutions must further satisfy \(|x|^2 + |y|^2 = 1\), possible solutions are \(x = \frac{1}{\sqrt{2}}, y = -\frac{i}{\sqrt{2}}\), so I can deduce that the eigenvector \(\ket{\phi_1} = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -i \end{pmatrix} = \frac{1}{\sqrt{2}}(\ket{0} - i \ket{1}) \), now I prove that
+\(M \ket{\phi_1} = \lambda_1 \ket{\phi_1}\)
+
+\[ M \ket{\phi_1} =  \left( 
+    \begin{array}{cc} 
+        1 & -1 \\
+        1 & 1
+    \end{array} 
+\right)\frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -i \end{pmatrix} = 
+\frac{1}{\sqrt{2}}\begin{pmatrix} 1 + i \\  1 - i \end{pmatrix} = 
+(1 + i) \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\  - i \end{pmatrix} =
+\lambda_1 \ket{\phi_1}
+\]
+\\
+\\
+\\
+Considering eigenvalue \(\lambda_2 = 1 - i\)
+
+\[\left(\lambda_2 I - M \right)\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \]
+\[
+\left( 
+    \begin{array}{cc} 
+       -i & 1 \\
+       -1 & -i
+    \end{array} 
+\right)\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \Rightarrow 
+\begin{cases} 
+y - ix =0 \\ 
+-x - iy = 0
+\end{cases} =
+\begin{cases} 
+y = ix \\ 
+x = -iy 
+\end{cases} 
+\]
+\\
+\\
+Orthonormal solutions must further satisfy \(|x|^2 + |y|^2 = 1\), possible solutions are \(x = -\frac{i}{\sqrt{2}}, y = \frac{1}{\sqrt{2}}\), so I can deduce that the eigenvector \(\ket{\phi_2} = \frac{1}{\sqrt{2}}\begin{pmatrix} -i \\ 1 \end{pmatrix} = \frac{1}{\sqrt{2}}(- 1 \ket{0} + \ket{1}) \), now I prove that
+\(M \ket{\phi_2} = \lambda_2 \ket{\phi_2}\)
+
+\[ M \ket{\phi_2} =  \left( 
+    \begin{array}{cc} 
+        1 & -1 \\
+        1 & 1
+    \end{array} 
+\right)\frac{1}{\sqrt{2}}\begin{pmatrix} -i \\ 1 \end{pmatrix} = 
+\frac{1}{\sqrt{2}}\begin{pmatrix} -1 - i \\  1 - i \end{pmatrix} = 
+(1 - i) \frac{1}{\sqrt{2}}\begin{pmatrix} -i \\  1 \end{pmatrix} =
+\lambda_2 \ket{\phi_2}
+\]
+
+\end{document}
