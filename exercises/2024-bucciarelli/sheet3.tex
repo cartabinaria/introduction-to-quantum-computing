@@ -1,0 +1,364 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins●●●●●●●●●●●●●
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter\bra{\langle}{\rvert}
+\DeclarePairedDelimiter\ket{\lvert}{\rangle}
+\DeclarePairedDelimiterX\braket[2]{\langle}{\rangle}{#1\,\delimsize\vert\,\mathopen{}#2}
+
+\usepackage{tikz}
+\usetikzlibrary{quantikz2}
+
+\title{
+Introduction to Quantum Computing \\  Exercise Sheet 3}
+
+\author{Stefano Bucciarelli}
+
+\begin{document}
+\maketitle
+
+\textbf{Exercise 1.} \\
+
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\psi_{\col}}\rangle$,slice style=red,slice label
+style={}]
+\ket{0} & \gate{X} & \gate{H} & \gate{X} & \gate{H} & \\
+\ket{0} & \gate{H} && \ctrl{-1} && 
+\end{quantikz}
+\\
+I consider the behaviour in each step on the quantum circuit above to find the probability that Alice win the game.
+
+So I compute $\psi_1, \psi_2, \psi_3$ and $\psi_4$
+
+ \[ \ket{\psi_1} = X(\ket{0}) H(\ket{0}) = \ket{1}\ket{+} \] 
+ \[ \ket{\psi_2} = H(\ket{1}) \ket{+} = \ket{-}\ket{+} \]
+ \[ \ket{\psi_3} = \ket{-}\ket{+} \] because $CNOT(\ket{+})(\ket{-}) = \ket{-}\ket{-}$ \\
+ \[ \ket{\psi_4} = H(\ket{-})\ket{-} = \ket{1}\ket{-}\]
+
+Since the result of the circuit on the first wire is $\ket{1}$ which represents the state H, Alice will win with a probability of $1$
+
+\pagebreak
+
+\textbf{Exercise 2.} \\
+
+Considering the general case for $QFT_{2^n}$ we can represent the behaviour of the function as a system of $2^n-1$ linear equations once for each element of the domain\\
+
+\[\begin{cases} 
+    QFT_{2^n}(\ket{0}) = \frac{1}{\sqrt{2^n}}e^{2\pi i \frac{0}{2^n}0}\ket{0}  + \ldots  + \frac{1}{\sqrt{2^n}}e^{2\pi i \frac{0}{2^n}2^n-1}\ket{2^n-1}  \\
+    \vdots  \\
+    QFT_{2^n}(\ket{2^n-1})  = \frac{1}{\sqrt{2^n}}e^{2\pi i \frac{2^n-1}{2^n}0}\ket{0} +  \ldots  +  \frac{1}{\sqrt{2^n}}e^{2\pi i \frac{2^n-1}{2^n}2^n-1}\ket{2^n-1} 
+\end{cases}\]
+\\
+From linear algebra it is known that the matrix represent a system of linear equations, and since $\ket{0}, \ldots, \ket{2^n-1}$ are orthogonal basis the system above must be the same as 
+\[\begin{cases} 
+    QFT_{2^n}(\ket{0}) = a_{00}\ket{0}  + \ldots  + a_{02^n-1}\ket{2^n-1}  \\
+    \vdots  \\
+    QFT_{2^n}(\ket{2^n-1})  = a_{2^n-10}\ket{0} +  \ldots  +  a_{2^n-12^n-1}\ket{2^n-1} 
+\end{cases}\]
+\\
+\\
+So it can be noticed that the matrix (called $MQFT_{2^n}$) of $QFT_{2^n}$ is such that for each $x : 0 \leq x \leq 2^n-1 $ 
+\[ MQFT_{2^n}\ket{x} = \begin{pmatrix} a_{00} & \ldots & \ldots & \ldots & a_{02^n-1} \\ \vdots & \ddots & & & \vdots \\ \vdots & & \ddots & & \vdots \\ \vdots & & & \ddots & \vdots \\a_{2^n-10} & \ldots & \ldots& \ldots &a_{2^n-12^n-1} \end{pmatrix} \ket{x} = \begin{pmatrix} a_{00} & \ldots & \ldots & \ldots & a_{02^n-1} \\ \vdots & \ddots & & & \vdots \\ \vdots & & \ddots & & \vdots \\ \vdots & & & \ddots & \vdots \\a_{2^n-10} & \ldots & \ldots& \ldots &a_{2^n-12^n-1} \end{pmatrix} \begin{pmatrix} 0 \\ \vdots \\ 1  \\ \vdots \\ 0 \end{pmatrix} =  \begin{pmatrix} a_{x0} \\ \vdots \\ \vdots \\\vdots \\ a_{x2^n-1}\end{pmatrix} \]
+\\
+From the comparison of two systems, for each $x : 0 \leq x \leq 2^n-1 $ and $y : 0 \leq y \leq 2^n-1 $ must be $a_{xy} = \frac{1}{\sqrt{2^n}}e^{2\pi i \frac{x}{2^n}y} = \frac{1}{\sqrt{2^n}}(e^{2\pi i \frac{1}{2^n}})^{xy} = \frac{1}{\sqrt{2^n}}\omega_n^{xy} $ where $\omega_n = e^{2\pi i \frac{1}{2^n}}$. 
+\\
+So \\
+\[ MQFT_{2^n} = \begin{pmatrix} 
+\frac{1}{\sqrt{2^n}}\omega_n^{0} & \frac{1}{\sqrt{2^n}}\omega_n^{0}  & \frac{1}{\sqrt{2^n}}\omega_n^{0} &\ldots  & \frac{1}{\sqrt{2^n}}\omega_n^{0}  \\ 
+\frac{1}{\sqrt{2^n}}\omega_n^{0} & \frac{1}{\sqrt{2^n}}\omega_n^{1} & \frac{1}{\sqrt{2^n}}\omega_n^{2} & \cdots & \frac{1}{\sqrt{2^n}}\omega_n^{2^n-1} \\ 
+\frac{1}{\sqrt{2^n}}\omega_n^{0} & \frac{1}{\sqrt{2^n}}\omega_n^{2} & \frac{1}{\sqrt{2^n}}\omega_n^{4} & \cdots & \frac{1}{\sqrt{2^n}}\omega_n^{2(2^n-1)} \\ 
+\vdots & & & \ddots & \vdots \\
+\frac{1}{\sqrt{2^n}}\omega_n^{0} & \frac{1}{\sqrt{2^n}}\omega_n^{2^n-1} &  \frac{1}{\sqrt{2^n}}\omega_n^{2(2^n-1)} & \ldots & \frac{1}{\sqrt{2^n}}\omega_n^{(2^n-1)(2^n-1)}
+\end{pmatrix} = \]
+\[= \frac{1}{\sqrt{2^n}} \begin{pmatrix} 
+\omega_n^{0} & \omega_n^{0}  & \omega_n^{0} &\ldots  & \omega_n^{0}  \\ 
+\omega_n^{0} & \omega_n^{1} & \omega_n^{2} & \cdots & \omega_n^{2^n-1} \\ 
+\omega_n^{0} & \omega_n^{2} & \omega_n^{4} & \cdots & \omega_n^{2(2^n-1)} \\ 
+\vdots & \vdots  & \vdots & \ddots & \vdots   \\
+\omega_n^{0} & \omega_n^{2^n-1} & \omega_n^{2(2^n-1)} & \ldots & \omega_n^{(2^n-1)(2^n-1)}
+\end{pmatrix}
+\] 
+\\
+It can be also noticed that for each $z \in Z$, $\omega_n^{z + {2^n}} = \omega_n^z$
+\\ \\ \\
+So for $n=1$\\ \\
+\(\omega_1^0 = (e^{2\pi i \frac{1}{2}})^{0} = e^{0} = 1 \)\\
+\(\omega_1^1 = (e^{2\pi i \frac{1}{2}})^{1} = e^{\pi i } = -1 \)\\
+\\
+This means that 
+\[MQFT_2 = 
+\frac{1}{\sqrt{2^n}} \begin{pmatrix} 
+\omega_1^0 & \omega_1^0 \\ 
+\omega_1^0 & \omega_1^1 \\ 
+\end{pmatrix} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \]\\
+\\ \\ \\
+So for $n=2$\\ \\
+\(\omega_2^0 = (e^{2\pi i \frac{1}{4}})^{0} = e^{0} = 1 \) \\
+\(\omega_2^1 = (e^{2\pi i \frac{1}{4}})^{1} = e^{\frac{\pi}{2}i} = i \)\\
+\(\omega_2^2 = (e^{2\pi i \frac{1}{4}})^{2} = e^{\pi i } = -1 \)\\
+\(\omega_2^3 = (e^{2\pi i \frac{1}{4}})^{3} = e^{\frac{3 \pi}{2}i} = -i \)\\
+\\
+This means that 
+\[MQFT_4 =  
+\frac{1}{\sqrt{2^n}} \begin{pmatrix} 
+\omega_2^0 & \omega_2^0 & \omega_2^0 & \omega_2^0 \\ 
+\omega_2^0 & \omega_2^1 & \omega_2^2 & \omega_2^3 \\ 
+\omega_2^0 & \omega_2^2 & \omega_2^4 & \omega_2^6 \\ 
+\omega_2^0 & \omega_2^3 & \omega_2^6 & \omega_2^9
+\end{pmatrix} =
+\frac{1}{\sqrt{4}} \begin{pmatrix} 
+\omega_2^0 & \omega_2^0 & \omega_2^0 & \omega_2^0 \\ 
+\omega_2^0 & \omega_2^1 & \omega_2^2 & \omega_2^3 \\ 
+\omega_2^0 & \omega_2^2 & \omega_2^0 & \omega_2^2 \\ 
+\omega_2^0 & \omega_2^3 & \omega_2^2 & \omega_2^1
+\end{pmatrix} =
+\frac{1}{2} \begin{pmatrix} 1 & 1 & 1 & 1 \\ 1 & i & -1 & -i \\ 1 & -1 & 1 & -1 \\ 1 & -i & -1 & i \end{pmatrix} \]\\
+\\ \\ \\
+So for $n=3$\\ \\
+\(\omega_3^0 = (e^{2\pi i \frac{1}{8}})^{0} = 1 \) \\
+\(\omega_3^1 = (e^{2\pi i \frac{1}{8}})^{1} = e^{\frac{\pi  i}{4}} \) \\
+\(\omega_3^2 = (e^{2\pi i \frac{1}{8}})^{2} = i \) \\
+\(\omega_3^3 = (e^{2\pi i \frac{1}{8}})^{3} = e^{\frac{3 \pi i}{4}} \) \\
+\(\omega_3^4 = (e^{2\pi i \frac{1}{8}})^{4} = -1 \) \\
+\(\omega_3^5 = (e^{2\pi i \frac{1}{8}})^{5} = e^{\frac{5 \pi i}{4}} \) \\
+\(\omega_3^6 = (e^{2\pi i \frac{1}{8}})^{6} = -i \) \\
+\(\omega_3^7 = (e^{2\pi i \frac{1}{8}})^{7} = e^{\frac{7 \pi i}{4}} \) \\
+
+
+\[MQFT_8 =  
+\frac{1}{\sqrt{2^n}} \begin{pmatrix} 
+\omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 \\ 
+\omega_3^0 & \omega_3^1 & \omega_3^2 & \omega_3^3 & \omega_3^4 & \omega_3^5 & \omega_3^6 & \omega_3^7 \\ 
+\omega_3^0 & \omega_3^2 & \omega_3^4 & \omega_3^6 & \omega_3^8 & \omega_3^{10} & \omega_3^{12} & \omega_3^{14} \\ 
+\omega_3^0 & \omega_3^3 & \omega_3^6 & \omega_3^9 &\omega_3^{12} & \omega_3^{15} & \omega_3^{18} & \omega_3^{21} \\
+\omega_3^0 & \omega_3^4 & \omega_3^8 & \omega_3^{12} & \omega_3^{16} & \omega_3^{20} & \omega_3^{24} & \omega_3^{28} \\ 
+\omega_3^0 & \omega_3^5 & \omega_3^{10} & \omega_3^{15} & \omega_3^{20} & \omega_3^{25} & \omega_3^{30} & \omega_3^{35} \\ 
+\omega_3^0 & \omega_3^6 & \omega_3^{12} & \omega_3^{18} & \omega_3^{24} & \omega_3^{30} & \omega_3^{36} & \omega_3^{42} \\ 
+\omega_3^0 & \omega_3^7 & \omega_3^{14} & \omega_3^{21} & \omega_3^{28} & \omega_3^{35} & \omega_3^{42} & \omega_3^{49} \\ 
+\end{pmatrix} =
+\\
+\frac{1}{\sqrt{8}} \begin{pmatrix} 
+\omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 & \omega_3^0 \\ 
+\omega_3^0 & \omega_3^1 & \omega_3^2 & \omega_3^3 & \omega_3^4 & \omega_3^5 & \omega_3^6 & \omega_3^7 \\ 
+\omega_3^0 & \omega_3^2 & \omega_3^4 & \omega_3^6 & \omega_3^0 & \omega_3^{2} & \omega_3^{4} & \omega_3^{6} \\ 
+\omega_3^0 & \omega_3^3 & \omega_3^6 & \omega_3^1 &\omega_3^{4} & \omega_3^{7} & \omega_3^{2} & \omega_3^{5} \\
+\omega_3^0 & \omega_3^4 & \omega_3^0 & \omega_3^{4} & \omega_3^{0} & \omega_3^{4} & \omega_3^{0} & \omega_3^{4} \\ 
+\omega_3^0 & \omega_3^5 & \omega_3^{2} & \omega_3^{7} & \omega_3^{4} & \omega_3^{1} & \omega_3^{6} & \omega_3^{3} \\ 
+\omega_3^0 & \omega_3^6 & \omega_3^{4} & \omega_3^{2} & \omega_3^{0} & \omega_3^{6} & \omega_3^{4} & \omega_3^{2} \\ 
+\omega_3^0 & \omega_3^7 & \omega_3^{6} & \omega_3^{5} & \omega_3^{4} & \omega_3^{3} & \omega_3^{2} & \omega_3^{1} \\ 
+\end{pmatrix} = \]
+\[
+= \frac{1}{\sqrt8} \begin{pmatrix} 
+1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\ 
+1 & e^{\frac{\pi  i}{4}} & i & e^{\frac{3 \pi  i}{4}} & -1 & e^{\frac{5 \pi  i}{4}} & -i & e^{\frac{7 \pi  i}{4}} \\ 
+1 & i & -1 & -i & 1 & i & -1 & -i \\ 
+1 & e^{\frac{3 \pi  i}{4}} & -i & e^{\frac{\pi  i}{4}} &-1 & e^{\frac{7 \pi  i}{4}} & i & e^{\frac{5 \pi  i}{4}} \\
+1 & -1 & 1 & -1 & 1 & -1 & 1 & -1 \\ 
+1 & e^{\frac{5 \pi  i}{4}} & i & e^{\frac{7 \pi  i}{4}} & -1 & e^{\frac{\pi  i}{4}} & -i & e^{\frac{3 \pi  i}{4}} \\ 
+1 & -i & -1 & i & 1 & -i & -1 & i \\ 
+1 & e^{\frac{7 \pi  i}{4}} & -i & e^{\frac{5 \pi  i}{4}} & -1 & e^{\frac{3 \pi  i}{4}} & i & e^{\frac{\pi  i}{4}} \\ 
+\end{pmatrix} \]
+\\
+\\
+\\
+The inverse function $QFT^{-1}_{2^n}(\ket{x}) = \frac{1}{\sqrt{2^n}} \sum_{y=0}^{2^n-1} e^{-2\pi i \frac{x}{2^n}y} \ket{y}$ is very similar to $QFT_{2^n}$, so we can retake the same steps, but now instead of $e^{2\pi i \frac{1}{2^n}}$ we should consider $e^{-2\pi i \frac{1}{2^n}}$ which is equal to $\omega_n^{-1}$. \\
+So if the matrix of $QFT^{-1}_{2^n}$ is called $MQFT^{-1}_{2^n}$, for finding $MQFT^{-1}_{2}, MQFT^{-1}_{4}$ and $MQFT^{-1}_{8}$ it is necessary to consider $MQFT_{2}, MQFT_{4}$ and $MQFT_{8}$ and change the sign before the exponent (except when exponent is $0$ that obviously remains equal)
+
+\[MQFT_2^{-1} = 
+\frac{1}{\sqrt{2}} \begin{pmatrix} 
+\omega_1^{0}  & \omega_1^{0} \\ 
+\omega_1^{0}  & \omega_1^{-1} \\ 
+\end{pmatrix} \]
+
+
+\[MQFT_4^{-1} =  
+\frac{1}{2} \begin{pmatrix} 
+\omega_2^{0}  & \omega_2^{0}  & \omega_2^{0}  & \omega_2^{0} \\ 
+\omega_2^{0}  & \omega_2^{-1}  & \omega_2^{-2}  & \omega_2^{-3} \\ 
+\omega_2^{0}  & \omega_2^{-2}  & \omega_2^{0}  & \omega_2^{-2} \\ 
+\omega_2^{0}  & \omega_2^{-3}  & \omega_2^{-2}  & \omega_2^{-1}
+\end{pmatrix} \]
+
+\[
+MQFT_8^{-1} = \frac{1}{\sqrt{8}} \begin{pmatrix} 
+\omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0} \\ 
+\omega_3^{0}  & \omega_3^{-1}  & \omega_3^{-2}  & \omega_3^{-3}  & \omega_3^{-4}  & \omega_3^{-5}  & \omega_3^{-6}  & \omega_3^{-7} \\ 
+\omega_3^{0}  & \omega_3^{-2}  & \omega_3^{-4}  & \omega_3^{-6}  & \omega_3^{0}  & \omega_3^{-2}  & \omega_3^{-4}  & \omega_3^{-6} \\ 
+\omega_3^{0}  & \omega_3^{-3}  & \omega_3^{-6}  & \omega_3^{-1}  & \omega_3^{-4}  & \omega_3^{-7}  & \omega_3^{-2}  & \omega_3^{-5} \\
+\omega_3^{0}  & \omega_3^{-4}  & \omega_3^{0}  & \omega_3^{-4}  & \omega_3^{0}  & \omega_3^{-4}  & \omega_3^{0}  & \omega_3^{-4} \\ 
+\omega_3^{0}  & \omega_3^{-5}  & \omega_3^{-2}  & \omega_3^{-7}  & \omega_3^{-4}  & \omega_3^{-1}  & \omega_3^{-6}  & \omega_3^{-3} \\ 
+\omega_3^{0}  & \omega_3^{-6}  & \omega_3^{-4}  & \omega_3^{-2}  & \omega_3^{0}  & \omega_3^{-6}  & \omega_3^{-4}  & \omega_3^{-2} \\ 
+\omega_3^{0}  & \omega_3^{-7}  & \omega_3^{-6}  & \omega_3^{-5}  & \omega_3^{-4}  & \omega_3^{-3}  & \omega_3^{-2}  & \omega_3^{-1} \\ 
+\end{pmatrix} \]
+\\
+But since for each $z \in Z$, $\omega_n^{z + {2^n}} = \omega_n^z$, it must be $\omega_n^{-x} = \omega_n^{2^n - x}$ so the three matrixes become
+\\
+\[MQFT_2^{-1} = 
+\frac{1}{\sqrt{2}} \begin{pmatrix} 
+\omega_1^{0}  & \omega_1^{0} \\ 
+\omega_1^{0}  & \omega_1^{1} \\ 
+\end{pmatrix} = 
+\frac{1}{\sqrt{2}} \begin{pmatrix} 
+1  & 1 \\ 
+1  & -1 \\ 
+\end{pmatrix}
+\]
+
+
+\[MQFT_4^{-1} =  
+\frac{1}{2} \begin{pmatrix} 
+\omega_2^{0}  & \omega_2^{0}  & \omega_2^{0}  & \omega_2^{0} \\ 
+\omega_2^{0}  & \omega_2^{3}  & \omega_2^{2}  & \omega_2^{1} \\ 
+\omega_2^{0}  & \omega_2^{2}  & \omega_2^{0}  & \omega_2^{2} \\ 
+\omega_2^{0}  & \omega_2^{1}  & \omega_2^{2}  & \omega_2^{3}
+\end{pmatrix} = \frac{1}{2} \begin{pmatrix} 
+1  & 1  & 1  & 1 \\ 
+1  & -i  & -1  & i \\ 
+1  & -1  & 1  & -1 \\ 
+1  & i  & -1  & -i
+\end{pmatrix} \]
+
+\[
+MQFT_8^{-1} = \frac{1}{\sqrt{8}} \begin{pmatrix} 
+\omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0}  & \omega_3^{0} \\ 
+\omega_3^{0}  & \omega_3^{7}  & \omega_3^{6}  & \omega_3^{5}  & \omega_3^{4}  & \omega_3^{3}  & \omega_3^{2}  & \omega_3^{1} \\ 
+\omega_3^{0}  & \omega_3^{6}  & \omega_3^{4}  & \omega_3^{2}  & \omega_3^{0}  & \omega_3^{6}  & \omega_3^{4}  & \omega_3^{2} \\ 
+\omega_3^{0}  & \omega_3^{5}  & \omega_3^{2}  & \omega_3^{7}  & \omega_3^{4}  & \omega_3^{1}  & \omega_3^{6}  & \omega_3^{3} \\
+\omega_3^{0}  & \omega_3^{4}  & \omega_3^{0}  & \omega_3^{4}  & \omega_3^{0}  & \omega_3^{4}  & \omega_3^{0}  & \omega_3^{4} \\ 
+\omega_3^{0}  & \omega_3^{3}  & \omega_3^{6}  & \omega_3^{1}  & \omega_3^{4}  & \omega_3^{7}  & \omega_3^{2}  & \omega_3^{5} \\ 
+\omega_3^{0}  & \omega_3^{2}  & \omega_3^{4}  & \omega_3^{6}  & \omega_3^{0}  & \omega_3^{2}  & \omega_3^{4}  & \omega_3^{6} \\ 
+\omega_3^{0}  & \omega_3^{1}  & \omega_3^{2}  & \omega_3^{3}  & \omega_3^{4}  & \omega_3^{5}  & \omega_3^{6}  & \omega_3^{7} \\ 
+\end{pmatrix} = 
+\frac{1}{\sqrt{8}} \begin{pmatrix} 
+1  & 1  & 1  & 1  & 1  & 1  & 1  & 1 \\ 
+1  & e^{\frac{7 \pi  i}{4}}  & -i  & e^{\frac{5 \pi  i}{4}}  & -1  & e^{\frac{3 \pi  i}{4}}  & i  & e^{\frac{\pi  i}{4}} \\ 
+1  & -i  & -1  & i  & 1  & -i  & -1  & i \\ 
+1  & e^{\frac{5 \pi  i}{4}}  & i  & e^{\frac{7 \pi  i}{4}}  & -1  & e^{\frac{\pi  i}{4}}  & -i  & e^{\frac{3 \pi  i}{4}} \\
+1  & -1  & 1  & -1  & 1  & -1  & 1  & -1 \\ 
+1  & e^{\frac{3 \pi  i}{4}}  & -i  & e^{\frac{\pi  i}{4}}  & -1  & e^{\frac{7 \pi  i}{4}}  & i  & e^{\frac{5 \pi  i}{4}} \\ 
+1  & i  & -1  & -i  & 1  & i  & -1  & -i \\ 
+1  & e^{\frac{\pi  i}{4}}  & i  & e^{\frac{3 \pi  i}{4}}  & -1  & e^{\frac{5 \pi  i}{4}}  & -i  & e^{\frac{7 \pi  i}{4}} \\  
+\end{pmatrix}\]
+
+\pagebreak
+
+
+\textbf{Exercise 3.} \\
+
+Knowing $U$ it is possible to infer $c-U$, which is $c-U = \left(
+    \begin{array}{cccc} 
+        I & 0 \\
+        0 & U 
+    \end{array} \right) = \left(
+    \begin{array}{cccc} 
+        1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 \\
+        0 & 0 & 0 & i \\
+        0 & 0 & i & 0
+    \end{array} \right)$\\
+To show that  $c-U$ has $i$ and $-i$ as eigenvalues first I prove that also $U$ has $i$ and $-i$ as eigenvalues computing equation $det(\lambda I - U) = 0$ and then finding his eigenvectors $\phi_1$ and $\phi_2$ computing $(\lambda I - U) \phi = 0 $
+
+\[det(\lambda I - U)= det \left( \begin{array}{cccc} \lambda  & -i \\ -i & \lambda  \end{array} \right) \rightarrow \lambda^2 + 1 = 0 \rightarrow \lambda_1 = i, \lambda_2 =  -i\]
+\\
+Considering $\lambda_1$ 
+\[(\lambda_1 I - U) \phi = \left( \begin{array}{cccc} i  & -i \\ -i & i \end{array} \right) \left(\begin{array}{cccc} x \\ y  \end{array}\right) = 0 \rightarrow \begin{cases} 
+ix - iy =0 \\ 
+-ix + iy = 0
+\end{cases} =
+\begin{cases} 
+y = x \\ 
+x = y 
+\end{cases} \]
+Solutions must further satisfy \(|x|^2 + |y|^2 = 1\), so they are \(x = \frac{1}{\sqrt{2}}, y = \frac{1}{\sqrt{2}}\), and eigenvectors are \(\ket{\phi_1} = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 1 \end{pmatrix} = \frac{1}{\sqrt{2}}(\ket{0} + \ket{1}) = \ket{+} \)\\
+\\
+I do the same thing for $\lambda_2$
+\[(\lambda_2 I - U) \phi = \left( \begin{array}{cccc} -i  & -i \\ -i & -i \end{array} \right) \left(\begin{array}{cccc} x \\ y  \end{array}\right) = 0 \rightarrow \begin{cases} 
+-ix - iy =0 \\ 
+-ix - iy = 0
+\end{cases} =
+\begin{cases} 
+y = -x \\ 
+x = -y 
+\end{cases} \]
+Solutions must further satisfy \(|x|^2 + |y|^2 = 1\), so they are \(x = \frac{1}{\sqrt{2}}, y = -\frac{1}{\sqrt{2}}\), and eigenvectors are \(\ket{\phi_2} = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -1 \end{pmatrix} = \frac{1}{\sqrt{2}}(\ket{0} - \ket{1}) = \ket{-} \)\\
+
+Since by definition c-gate is such that $c-U\ket{1}\ket{x} = \ket{1}U\ket{x} $ foreach $x$, also for eigenvectors  $c-U\ket{1}\ket{\phi_1} = \ket{1}U\ket{\phi_1} = i\ket{1}\ket{\phi_1}$ and $c-U\ket{1}\ket{\phi_2} = \ket{1}U\ket{\phi_2} = -i\ket{1}\ket{\phi_2}$. \\
+So eigenvectors of $c-U$ are
+\[\psi_1 = \ket{1}\ket{\phi_1} = \ket{1}\ket{+} =  \begin{pmatrix} 0 \begin{pmatrix}  \frac{1}{\sqrt{2}} \\  \frac{1}{\sqrt{2}} \end{pmatrix} \\ 1 \begin{pmatrix}  \frac{1}{\sqrt{2}} \\  \frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\  \frac{1}{\sqrt{2}} \\  \frac{1}{\sqrt{2}} \end{pmatrix} \]
+\[\psi_2 = \ket{1}\ket{\phi_2} = \ket{1}\ket{-} = \begin{pmatrix} 0 \begin{pmatrix}  \frac{1}{\sqrt{2}} \\  -\frac{1}{\sqrt{2}} \end{pmatrix} \\ 1 \begin{pmatrix}  \frac{1}{\sqrt{2}} \\  -\frac{1}{\sqrt{2}} \end{pmatrix} \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\  \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{pmatrix} \]
+\\
+\\
+The circuit for the eigenvalue estimation is the one used for the phase estimation, and for that we have to considering eigenvalues in the form $e^{2\pi i \omega}$:
+\[\lambda_1 = e^{2\pi i \omega_1} = i = e^{\frac{\pi}{2} i} = e^{2\pi i (\frac{\pi}{4})} \rightarrow \omega_1 = \frac{\pi}{4}\]
+\[\lambda_2 = e^{2\pi i \omega_1} = i = e^{\frac{3}{2}\pi i} = e^{2\pi i (\frac{3}{4}\pi)} \rightarrow \omega_2 = \frac{3}{4}\pi\]
+\\
+It is known a priori that the number of control wires is $n = 2$ since the value to estimate will be in the form $\frac{x}{2^n}$ and the denominator of both $\omega_1$ and $\omega_2$ is $4$.
+\\
+\\
+The following is the circuit for eigenvector $\ket{\psi_1} = \ket{1}\ket{+}$:
+\\
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\rho_{\col}}\rangle$,slice style=red,slice label
+style={}]
+\ket{0} & \gate[2]{QFT} & \ctrl{2} && \gate[2]{QFT^{-1}} & \\
+\ket{0} &&& \ctrl{1} && \\
+\ket{1} && \gate[2]{(c-U)^2} & \gate[2]{c-U} && \\
+\ket{+} &&&&&
+\end{quantikz}
+\\
+So to verify the eigenvalue estimated I compute $\ket{\rho_1}, \ket{\rho_2}, \ket{\rho_3}, \ket{\rho_4}$, 
+
+\[\ket{\rho_1} = QFT(\ket{0}\ket{0})\ket{1}\ket{+} = H(\ket{0})H(\ket{0})\ket{1}\ket{+} = \ket{+}\ket{+}\ket{1}\ket{+} \]  
+\\
+For computing $\ket{\rho_2}$ I recall that for eigenvector $\ket{psi}$ with eigenvalue $e^{2\pi i \omega}$ must be $(c-U^2)(\ket{+}\ket{\psi}) = \frac{\ket{0}+e^{2\pi i 2\omega}\ket{1}}{\sqrt{2}}\ket{\psi}$, so $(c-(c-U)^2)\ket{+}\ket{\psi_1} =(c-(c-U)^2)(\ket{+})(\ket{1}\ket{+}) = \frac{\ket{0}+e^{2\pi i 2\omega_1}\ket{1}}{\sqrt{2}}(\ket{1}\ket{+}) = \frac{\ket{0}+e^{2\pi i 2\frac{1}{4}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{+}) = \frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{+}) $, so:
+
+\[ \ket{\rho_2} = \frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}\ket{+}\ket{1}\ket{+} \]
+\\
+For computing $\ket{\rho_3}$ I recall that for eigenvector $\ket{\psi}$ with eigenvalue $e^{2\pi i \omega}$ must be $(c-U)(\ket{+}\ket{\psi}) = \frac{\ket{0}+e^{2\pi i \omega}\ket{1}}{\sqrt{2}}\ket{\psi}$, so $(c-(c-U))(\ket{+}\ket{\psi_1}) = (c-(c-U))(\ket{+}(\ket{1}\ket{+})) = \frac{\ket{0}+e^{2\pi i \frac{1}{4}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{+})$, so:
+\[ \ket{\rho_3} = \left(\frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i \frac{1}{4}}\ket{1}}{\sqrt{2}}\right)\ket{1}\ket{+} \]
+\\
+Considering $\ket{\rho_4}$ of control registers I compute $QFT^{-1}_{2}\left(\frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i \frac{1}{4}}\ket{1}}{\sqrt{2}}\right)$ that considering the binary form of $\omega_1$ is $QFT^{-1}_{2}\left(\frac{\ket{0}+e^{2\pi i 0.1}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i 0.01}\ket{1}}{\sqrt{2}}\right) $ that it is equal to $\ket{1}\ket{0}$ by definition of $QFT^{-1}_{2}$. \\
+\[\ket{\rho_4} = \ket{1}\ket{0}\ket{\psi_1}\]
+\\
+Finally $\ket{x_1} = \ket{0}$ and $\ket{x_2} = \ket{1}$ so $\ket{x} = \ket{01}$ that is $x = 1$, where $x$ is the numerator of estimation value $\frac{x}{2^n} =\frac{x}{2^2} = \frac{1}{4}$ which is correct.\\
+
+The following circuit for $\ket{\psi_2}$ it's very similar to the one above
+
+\begin{quantikz}[slice all, slice
+titles=$\lvert{\rho_{\col}}\rangle$,slice style=red,slice label
+style={}]
+\ket{0} & \gate[2]{QFT} & \ctrl{2} && \gate[2]{QFT^{-1}} & \\
+\ket{0} &&& \ctrl{1} && \\
+\ket{1} && \gate[2]{(c-U)^2} & \gate[2]{c-U} && \\
+\ket{-} &&&&&
+\end{quantikz}
+
+So to verify the eigenvalue estimated I compute $\ket{\rho_1}, \ket{\rho_2}, \ket{\rho_3}, \ket{\rho_4}$, 
+
+\[\ket{\rho_1} = QFT(\ket{0}\ket{0})\ket{1}\ket{-} = H(\ket{0})H(\ket{0})\ket{1}\ket{-} = \ket{-}\ket{-}\ket{1}\ket{-} \]  
+\\
+For computing $\ket{\rho_2}$ I recall that for eigenvector $\ket{psi}$ with eigenvalue  $e^{2\pi i \omega}$, $(c-U^2)(\ket{-}\ket{\psi}) = \frac{\ket{0}+e^{2\pi i 2\omega}\ket{1}}{\sqrt{2}}\ket{\psi}$, so $(c-(c-U)^2)\ket{-}\ket{\psi_1} =(c-(c-U)^2)(\ket{-})(\ket{1}\ket{-}) = \frac{\ket{0}+e^{2\pi i 2\omega_1}\ket{1}}{\sqrt{2}}(\ket{1}\ket{-}) = \frac{\ket{0}+e^{2\pi i 2\frac{3}{4}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{-}) = \frac{\ket{0}+e^{2\pi i \frac{3}{2}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{-}) = \frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{-}) = $, so:
+
+\[ \ket{\rho_2} = \frac{\ket{0}+e^{2\pi i \frac{3}{2}}\ket{1}}{\sqrt{2}}\ket{-}\ket{1}\ket{-} \]
+\\
+For computing $\ket{\rho_3}$ I recall that for eigenvector $\ket{psi}$ with eigenvalue $e^{2\pi i \omega}$, $(c-U)(\ket{-}\ket{\psi}) = \frac{\ket{0}+e^{2\pi i \omega}\ket{1}}{\sqrt{2}}\ket{\psi}$, so $(c-(c-U))(\ket{-}\ket{\psi_1}) = (c-(c-U))(\ket{-}(\ket{1}\ket{-})) = \frac{\ket{0}+e^{2\pi i \frac{3}{4}}\ket{1}}{\sqrt{2}}(\ket{1}\ket{-})$, so:
+\[ \ket{\rho_3} = \left(\frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i \frac{3}{4}}\ket{1}}{\sqrt{2}}\right)\ket{1}\ket{-} \]
+\\
+Considering $\ket{rho_4}$ of control registers I compute $QFT^{-1}_{2}\left(\frac{\ket{0}+e^{2\pi i \frac{1}{2}}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i \frac{3}{4}}\ket{1}}{\sqrt{2}}\right)$ that considering the binary form of $\omega_1$ is $QFT^{-1}_{2}\left(\frac{\ket{0}+e^{2\pi i 0.1}\ket{1}}{\sqrt{2}}\right)\left(\frac{\ket{0}+e^{2\pi i 0.11}\ket{1}}{\sqrt{2}}\right) $ that it is equal to $\ket{1}\ket{0}$ by definition of $QFT^{-1}_{2}$. \\
+\[\ket{\rho_4} = \ket{1}\ket{1}\ket{\psi_1}\]
+
+Finally $\ket{x_1} = \ket{1}$ and $\ket{x_2} = \ket{1}$ so $\ket{x} = \ket{11}$ that is $x = 3$, where $x$ is the numerator of estimation value $\frac{x}{2^n} =\frac{x}{2^2} = \frac{3}{4}$ which is correct.
+
+\end{document}
