@@ -1,0 +1,1867 @@
+\documentclass{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{graphicx} 
+\usepackage[italian]{babel}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{multicol}
+\usepackage{wrapfig}
+% quantum circuits
+\usepackage{qcircuit}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{systeme}
+% \usepackage{showframe}% alignment tool
+\usepackage{amssymb}
+
+\newtheorem*{definition}{Definizione}
+\newtheorem{axiom}{Assioma}[section]
+\newtheorem{theorem}{Teorema}[section]
+
+\newcommand{\vect}[1]{|#1\rangle}
+\newcommand{\frsq}[0]{\frac{1}{\sqrt{2}}}
+
+\title{QuantumComputing}
+\author{Francesco Testa}
+\date{February 2025}
+
+\setlength{\parindent}{0pt}
+\setcounter{tocdepth}{2}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Bit}
+Il bit classico ha soltanto due stati: 0 o 1, e possiamo fare le classiche operazioni di Not, Or ecc.
+
+Dati n bit possiamo rappresentare \(2^n\) numeri.
+
+Possiamo rappresentare le stringhe bit \textbf{come vettori}:
+\begin{center}
+    \begin{math}
+|0\rangle = 
+\begin{bmatrix}
+1 \\ 0
+\end{bmatrix}
+\quad\quad\quad
+|1\rangle = 
+\begin{bmatrix}
+0 \\ 1
+\end{bmatrix}
+\end{math}
+\end{center}
+
+Questa rappresentazione ci permette di definire delle operazioni comuni tra bit e qubit, come quelle in seguito.
+
+Parliamo di \textbf{prodotto tensoriale}($\otimes$) l'operazione che ci restituisce tutte le possibili combinazioni, ovvero tutti i possibili prodotti:
+
+\begin{center}
+\begin{math}
+    \begin{bmatrix}
+        x_0 \\ x_1 
+    \end{bmatrix} \otimes
+    \begin{bmatrix}
+        y_0 \\ y_1 
+    \end{bmatrix}  = 
+    \begin{bmatrix}
+        x_0y_0 \\ x_0y_1 \\x_1y_0 \\ x_1y_1 
+    \end{bmatrix}
+\end{math}
+\end{center}
+
+esempio: \begin{math}
+    |001\rangle = 
+    |00\rangle \otimes |1\rangle = \begin{bmatrix}
+        1\\0\\0\\0
+    \end{bmatrix} \otimes \begin{bmatrix}
+        0\\1 
+    \end{bmatrix} = \begin{bmatrix}
+        0\\1\\0\\0\\0\\0\\0\\0
+    \end{bmatrix}
+\end{math}
+
+Rappresentiamo tutto come matrice, sia il bit sia le operazioni base sui bit.
+Nota: il prodotto tensoriale non \'{e} commutativo
+
+\subsection{NOT in bit come vettori}
+
+\textit{x} può essere rappresentato come vettore colonna $( \text{ad esempio} \begin{bmatrix}
+    x_0\\x_1
+\end{bmatrix})$
+Poich\'{e} rappresentiamo anche la NOT come una matrice, nel caso della due per due avremo:
+
+\begin{center}
+    \begin{math}
+        NOT = X = \begin{bmatrix}
+             0 & 1 \\1 & 0
+        \end{bmatrix}
+    \end{math}
+\end{center}
+
+Richiamando il prodotto tra matrici, vediamo come le proprietà della NOT sono rispettate, infatti se applichiamo la not a se stessa otteniamo l'identità:
+\begin{center}
+    \begin{math}
+    \begin{bmatrix}
+        0 & 1\\1 & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        0 & 1\\1 & 0
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        1 & 0\\1 & 0
+    \end{bmatrix}
+\end{math}
+\end{center}
+
+
+\textbf{Notazione}: $|\overline{x}\rangle = X|x\rangle$
+
+$$
+\Qcircuit{
+    & \gate{X} & \qw
+}
+$$
+    
+
+Andando a manipolare un singolo bit le uniche operazioni possibili sono l'identità (tenerlo com'é) oppure il NOT (flipparlo).
+
+Le operazioni in quantum computing devono essere reversibili! Ovvero possiamo tornare indietro a partire dal risultato (ad esempio la AND tra due bit mi restituisce un bit solo e non sappiamo da quali bit siamo partiti, quindi é necessario portarsi indietro altra informazione)
+
+\subsection{Swapping}
+Un'operazione \textbf{reversibile} che possiamo fare in Quantum Computing, dati due bit, é lo \textbf{swapping}
+\begin{center}
+    \begin{math}
+        S_{01}\vect{x}\vect{y} = \vect{y}\vect{x}
+    \end{math}
+\end{center}
+
+Se prendiamo questa operazione come matrice:
+\begin{center}
+    \begin{math}
+        S_{01}=\begin{bmatrix}
+            1 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 \\
+            0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 1
+        \end{bmatrix}
+    \end{math}
+\end{center}
+
+Nota: quando mettiamo due vettori vicini si intende un'operazione di prodotto tensoriale tra di loro.
+
+\subsection{Controlled NOT}
+É un'operazione classica che esegue la stessa operazione della XOR, ma la rende \textbf{biettiva}(e self-invertible) utilizzando un nuovo filo che controlli l'operazione. Nell'output infatti compare uno dei due input (x) senza modificarlo. Infatti posso riottenere \textit{y} a partire da \textit{x} e dal risultato.\footnote{Non posso fare lo stesso ragionamento con la AND perché se volessi capire da dove proviene lo 0 del risultato ho 3 possibilità, é necessario avere più bit per coprire tutte le combinazioni, a differenza della XOR}
+
+
+
+\begin{center}
+    \begin{math}
+        CNOT \vect{x}\vect{y} = \vect{x}\vect{x \otimes y}
+    \end{math}
+\end{center}
+
+Se vediamo l'operazione come matrice, abbiamo:
+\begin{center}
+    \begin{math}
+        CNOT=\begin{bmatrix}
+            1 & 0 & 0 & 0 \\
+            0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 1 \\
+            0 & 0 & 1 & 0
+        \end{bmatrix}
+    \end{math}
+\end{center}
+
+Intuizione: abbiamo una not in alto a sinistra e invertiamo in basso a destra in base al risultato della not.
+
+Il circuito del CNOT è il seguente:
+
+$$
+\Qcircuit {
+\lstick{\vect{x}} & \ctrl{1} & \rstick{\vect{x}} \qw \\
+\lstick{\vect{y}} & \targ & \rstick{\vect{x\otimes y}} \qw
+}
+$$
+
+
+\section{Qubit}
+Le operazioni viste fino ad ora (NOT, swap, CNOT) sono delle operazioni che possono essere svolte anche sui circuiti classici (quindi con i bit) e danno parte di un particolare ramo, ovvero i \textbf{circuiti reversibili}\footnote{Ogni porta ha n input e n output, e dall'output possiamo risalire all'input.}.
+Queste porte sono anche \textbf{self-inverse}, ovvero applicandole a se stesse si ottiene l'identitá.
+In realtà, per la reversibilità basta che sia invertibile, ovvero \'{e} importante che l'inverso esista.
+
+Questi operatori, in quanto reversibili, possono essere utilizzate anche nei circuiti quantici.
+In effetti, il concetto di \textit{Qubit} \'e un'estensione del concetto di bit.
+
+\begin{definition}
+    Un \textbf{qubit} è un sistema quantico il cui stato \'e un vettore \textbf{bidimensionale}, \textbf{unitario}, \textbf{complesso}.
+    $$
+\vect{\psi} = \alpha\vect{0} + \beta\vect{1} \text{, dove } |\alpha|^2 + |\beta|^2 = 1
+$$
+\end{definition}
+
+\begin{itemize}
+    \item Bidimensionale: \'e una combinazione lineare della base (composta da due elementi indipendenti: $\vect{0}$ e $\vect{1}$) \footnote{La base di uno spazio vettoriale è un insieme di vettori linearmente indipendenti che generano lo spazio.}.
+    \item Complesso: $\alpha$ e $\beta$ sono numeri complessi ($\alpha = a+ib$).
+    Quindi in realt\'a siamo in un campo bidimensionale complesso, che corrisponde ad un campo reale a quattro dimensioni.
+    \item Unitario: la lunghezza del vettore \'e sempre 1.
+    Per misurarlo, possiamo applicare il teorema di Pitagora applicato ai numeri complessi, ovvero:
+$|\alpha| = \sqrt{a^2 + b^2}$, che, poich\'e deve essere sempre 1, equivale a $|\alpha| = a^2 + b^2$
+\end{itemize}
+
+In realt\'a, il bit classico \'e un qubit che soddisfa $\alpha = 1$ o $\beta = 1$, ma i processi fisici non ci permettono di vedere stati intermedi.
+Questo infatti gi\'a è il primo scoglio del quantum computing, ovvero \'e difficile creare delle condizioni favorevoli per il quantum (ad esempio temperature molto basse).
+I dettagli a basso livello non ci interessano, dunque partiamo da un livello di astrazione che ci permette di usare i qubit, senza sapere come essi siano creati.
+
+\subsection{Assiomi della Quantum Theory}
+\begin{axiom}[\textbf{stati}]
+Lo stato di un sistema quantico \'e un vettore complesso unitario:
+    $$
+\vect{\psi} = \alpha\vect{0} + \beta\vect{1} \text{, dove } |\alpha|^2 + |\beta|^2 = 1
+$$  
+\end{axiom}
+$\alpha$ e $\beta$ sono chiamati \textbf{ampixezza} (amplitudes).
+
+Ecco alcuni esempi di \textbf{stati semplici}:
+
+$$
+    \vect{+} = \frac{1}{\sqrt{2}}\vect{0} + \frac{1}{\sqrt{2}}\vect{1} \quad\quad\quad \vect{-} = \frac{1}{\sqrt{2}}\vect{0} - \frac{1}{\sqrt{2}}\vect{1}
+$$
+Entrambi gli stati denotano un momento in cui \'e "50\% 0, 50\% 1", tuttavia, effettuando delle operazioni, questi due stati si comportano in mondo diverso. 
+Non possiamo quindi sostituire lo stato con la probabilit\'a per effettuare delle operazioni.
+
+\begin{axiom}[\textbf{dinamica}]
+    L'evoluzione di un sistema chiuso \'e descritto da una \textbf{matrice unitaria} \textit{U}.
+    $$
+\Qcircuit{
+    \lstick{\vect{\psi}}& \gate{U} & \rstick{U\vect{\psi}} \qw
+}
+$$
+    
+\end{axiom}
+
+Si parla di matrice unitaria in quanto, nella meccanica quantistica, si lavora con vettori unitari.
+Dunque le matrici che utilizziamo per effettuare delle operazioni sui vettori devono dare in output un vettore unitario, per questo chiamate matrice unitarie.
+
+\begin{theorem}[Matrice Unitaria]
+    Una matrice \textit{U} si dice \textbf{unitaria} $\iff U^\dagger U = I$, dove $U^\dagger$ \'e la matrice coniugata trasposta di \textit{U}
+\end{theorem}
+
+Data una matrice \textit{U}, andiamo a trasporla (swap di righe e colonne) e coniugarla (per ogni elemento, andiamo ad invertire il segno della parte complessa, ovvero $3+2i$ diventa $3-2i$) per ottenere $U^\dagger$.
+
+Esistono 4 matrici unitarie molto importanti che sono: Identitá e le 3 matrici di Pauli (che ci permettono di ruotare gli assi.
+Queste sono:
+
+\begin{center}
+\begin{math}
+    I = 
+    \begin{bmatrix}
+        1 & 0 \\ 0 & 1
+    \end{bmatrix}
+    \quad   \quad 
+    X = 
+    \begin{bmatrix}
+        0 & 1 \\ 1 & 0
+    \end{bmatrix}
+    \quad   \quad 
+    Y = 
+    \begin{bmatrix}
+        0 & -i \\ i & 0
+    \end{bmatrix}
+    \quad   \quad 
+    Z = 
+    \begin{bmatrix}
+        1 & 0 \\ 0 & -1
+    \end{bmatrix}
+\end{math}
+\end{center}
+
+(esercizi: Appendice \ref{ex:unitary_matrix}).
+
+Un'altra matrice unitaria importante é quella di \textbf{Hadamard}:
+\begin{center}
+    \begin{math}
+        H = 
+        \begin{bmatrix}
+            \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}
+        \end{bmatrix}
+    \end{math}
+\end{center}
+\'E utile perché $H\vect{0} = \vect{+}$ e $H\vect{1} = \vect{-}$, ovvero ci permette di creare \textbf{superposizioni}.
+
+
+\begin{axiom}[\textbf{Misurazione - Regola di Born}]
+\label{axiom:Born_rule}
+    Possiamo misurare un sistema in una qualsiasi base dello spazio di stati, e otteniamo un risultato probabilistico. Tuttavia, il sistema poi collassa sul risultato ottenuto
+\end{axiom}
+Ad esempio, preso il qubit $\vect{\psi} = \alpha\vect{0} + \beta\vect{1}$, possiamo misurarlo nella base $\{\vect{0}, \vect{1}\}$ (chiamata anche \textbf{base computazionale}). 
+Otterremo un risultato $ x \;(\in [0,1])$ con probabilit\'a $|\alpha_x|^2$, e il sistema collasser\`a a $\vect{x}$ (esercizi: Appendice \ref{ex:qubit_measurement}).\footnote{In seguito utilizzeremo anche la misurazione basata sul coniugato. Ovvero, per misurare $|A_y|^2$ la formula sará $A_y^\dagger A_y$}
+
+Il disegno del circuito \'e il seguente:
+$$
+\Qcircuit{
+\lstick{\vect{\psi}} & \meter & \rstick{\vect{x}} \qw
+}
+$$
+
+\begin{axiom}[Composizione di sistemi]
+se 
+    \begin{itemize}
+        \item A ha uno stato in \textit{span(V)}\footnote{Span \'e il sottospazio generato da un insieme di vettori, ovvero l'insieme finito di tutte le possibili combinazioni lineari degli elementi di V} per un insieme di vettori \textit{V};
+        \item B ha uno stato in \textit{span(W)} per un insieme di vettori \textit{W};
+    \end{itemize}
+    allora \textit{AB} ha uno stato nello $span(\{v\otimes w | v\in V \land w\in W\})$
+\end{axiom}
+
+La definizione pu\'o sembrare ostica ma in realt\'a \'e molto semplice. Considerando due qubit che hanno base $\{\vect{0}, \vect{1}\}$, allora la base della composizione dei due qubit sar\'a $\{\vect{00}, \vect{01}, \vect{10}, \vect{11}\}$
+
+
+\subsection{Misurazione}
+
+La regola di Born, ovvero l'assioma \ref{axiom:Born_rule} esprime la misurazione di un singolo Qubit. 
+Supponiamo ad esempio di avere un sistema composto da pi\'u qubit, comme possiamo misurarne ad esempio solo uno del sistema?
+
+Innanzitutto riscriviamo la formula di uno sistema ad \textit{n} qubit:
+$$
+\vect{\psi} = \alpha_0\vect{0}\otimes \vect{\psi_0} + \alpha_1 \vect{1}\otimes \vect{\psi_1}
+$$
+$\vect{\psi_i}$ sono gli \textit{n-1} qubit rimanenti del sistema.
+
+\begin{axiom}[Regola di Born generalizzata]
+    Possiamo misurare il \textbf{primo} qubit in un sistema ad \textbf{n} qubit. 
+    $\vect{\psi} = \alpha_0\vect{0}\otimes \vect{\psi_0} + \alpha_1 \vect{1}\otimes \vect{\psi_1}$ nella base $\{\vect{0},\vect{1}\}$
+    Il risultato sará x con probabilità $|\alpha_x|^2$. \\
+    Lo stato del sistema collassa a $\vect{x}\otimes\vect{\psi_x}$\footnote{Nota: considera bene che x puó essere soltanto 0 o 1. Quindi in base alla misurazione del primo bit cambia totalmente lo stato del sistema!}.
+\end{axiom}
+
+Gli esercizi in appendice \ref{ex:qubit_measurement} (il 2 e il 3) valgono da esempi.
+
+\subsection{Preparazione stati}
+\subsubsection{Stato formato da un qubit}
+L'obiettivo \'e preparare un qualsiasi stato $\vect{\psi}$ a partire dallo stato $\vect{0}$ (o $\vect{1}$). Ovvero, vogliamo trovare quella matrice unitaria \textit{U} t.c. $\vect{\psi} = U \vect{0}$.
+Per preparare uno stato $\vect{\psi} = \alpha\vect{0}+\beta\vect{1}$ a partire da voglio che:
+$$
+U\vect{0} = \begin{bmatrix}
+    a & b \\ c & d
+\end{bmatrix} \begin{bmatrix}
+    1\\0
+\end{bmatrix} = \begin{bmatrix}
+    \alpha\\\beta
+\end{bmatrix} \implies U = \begin{bmatrix}
+    \alpha & x \\\beta & y
+\end{bmatrix}
+\text{ per qualche x e y}
+$$
+In realt\'a \textit{x} e \textit{y} non possono essere prese in modo casuale in quanto \textbf{\textit{U} deve essere unitaria}.
+Si pu\'o dimostrare che la scelta di \textit{U} \'e la seguente:
+$$
+U = \begin{bmatrix}
+    \alpha & -\beta^* \\\beta & \alpha^*
+\end{bmatrix}\; \text{ infatti, }\quad UU^\dagger = \begin{bmatrix}
+    \alpha & -\beta^* \\\beta & \alpha^*
+\end{bmatrix}\begin{bmatrix}
+    \alpha & -\beta^* \\\beta & \alpha^*
+\end{bmatrix} = \begin{bmatrix}
+    \alpha\alpha^* + \beta^*\beta & \alpha\beta^* - \beta^* \alpha \\ \beta\alpha^* - \alpha^*\beta & \beta^*\beta + \alpha^*\alpha
+\end{bmatrix} = 
+    \begin{bmatrix}
+        1&0\\0&1
+    \end{bmatrix}
+$$
+$\alpha\beta^* - \beta^* \alpha = 0$ perch\'e il prodotto complesso \'e commutativo; $\beta^*\beta + \alpha^*\alpha = 1$ poich\'e \'e il modulo del numero complesso.
+\subsubsection{Stato $\vect{0}$}
+Siamo riusciti a preparare uno stato a partire dal qubit $\vect{0}$. 
+Come possiamo ottenere $\vect{0}$?
+Ci sono due metodi:
+\begin{itemize}
+    \item Processi fisici
+    \item Partiamo da uno stato qualsiasi e lo misuriamo per ottenere $\vect{0}$ o $\vect{1}$. 
+    In questo caso andiamo a negarlo.
+\end{itemize}
+
+\subsubsection{Stato di due qubit arbitrari}
+Ora vogliamo preparare qualsiasi stato $\vect{\psi}$ fatto da due qubit, a partire da degli zeri ($\vect{0}$).
+Lo stato che vogliamo raggiungere ha forma: $\vect{\psi} = \alpha_{00}\vect{00}+\alpha_{01}\vect{01}+\alpha_{10}\vect{10} + \alpha_{11}\vect{11}$.
+
+Possiamo \textbf{comporre stati} grazie al tensor product dei vettori.
+
+\paragraph{Qubit indipendenti}
+Per ottenere dei qubit indipendenti possiamo utilizzare:
+$$
+U\vect{0} \otimes V\vect{0} = \left( \alpha_1\vect{0}+\alpha_1\vect{1}\right) \otimes  \left( \beta_1\vect{0}+\beta_1\vect{1}\right) = \alpha_{0}\beta_{0}\vect{00}+\alpha_{0}\beta_1\vect{01}+\alpha_{1}\beta_0\vect{10} + \alpha_{1}\beta_1\vect{11}
+$$
+Quindi
+$$
+\alpha_{00} = \alpha_{0}\beta_{0} \quad\alpha_{01} = \alpha_{0}\beta_{1} \quad\alpha_{10} = \alpha_{1}\beta_{0} \quad\alpha_{11} = \alpha_{1}\beta_{1}
+\implies \frac{\alpha_{00}}{\alpha_{01}} = \frac{\beta_0}{\beta_1} = \frac{\alpha_{10}}{\alpha_{11}}
+$$
+Quest'ultima uguaglianza \textbf{non \'e sempre vera}, o almeno nel caso generale non lo \'e.
+
+\paragraph{Qubit entangled}
+Vogliamo ottenere $\vect{\sigma} = \alpha_{00}\vect{00}+\alpha_{01}\vect{01}+\alpha_{10}\vect{10} + \alpha_{11}\vect{11}$.
+Raccogliendo ($\vect{0}$ e $\vect{1}$) abbiamo:
+$$
+\vect{\sigma} = \vect{0}\otimes\vect{\psi} + \vect{1}\otimes\vect{\phi}
+\quad \text{ con }\quad \vect{\psi} = \alpha_{00}\vect{0} + \alpha_{01}\vect{1} \;\; \text{ e } \;\;  \vect{\phi} = \alpha_{10}\vect{0} + \alpha_{11}\vect{1} 
+$$
+
+Vogliamo ora trovare quella \textit{U} (da applicare soltanto sul primo qubit) t.c.
+$$
+    U\otimes I\vect{\sigma} = \vect{0}\otimes\vect{\psi'}+\vect{1}\otimes \vect{\phi'}
+$$ con $\vect{\psi'}$ e $\vect{\phi'}$ ortogonali\footnote{Due vettori $\vect{\psi},\vect{\phi}$ si dicono \textbf{ortogonali}$\iff$ $\langle \psi|\phi \rangle = \sum_{i=1}^n \psi_i^*\phi_i = 0$. $\langle \psi|\phi \rangle = \langle \phi|\psi \rangle^*$. L'operazione $\langle\cdot|\cdot\rangle$ \'e chiamata \textbf{inner product}}. 
+
+Proviamo con la matrice \textit{U} di prima:
+$$
+U\otimes I\vect{\sigma} = \begin{bmatrix}
+    a & -b^* \\ b & a^*
+\end{bmatrix}\otimes I\vect{\sigma} = (a\vect{0}+b\vect{1})\otimes \vect{\psi}+ (-b^*\vect{0}+a^*\vect{1})\otimes \vect{\phi} = \vect{0}\otimes\vect{\psi'}+\vect{1}\otimes \vect{\phi'}$$
+$$
+\text{dove }\quad\;\; \vect{\psi'} = a\vect{\psi}-b^*\vect{\phi}\;\;\text{ e }\;\;  \vect{\phi'} = b\vect{\psi}a^*\vect{\phi}
+$$
+
+Sostianzialmente stiamo applicando la matrice \textit{U} soltanto ad un qubit, lasciando inalterato il secondo.
+Poich\'e vogliamo che i due vettori siano ortogonali, deve valere:
+
+\begin{center}
+   \begin{math}
+    0 = \langle \phi'|\psi'\rangle = b^*a\langle \psi|\psi\rangle + aa\langle \phi|\psi\rangle - b^*b^*\langle \psi|\phi\rangle - ab^*\langle \phi|\phi\rangle = a^2\langle \phi|\psi\rangle-b^{*2}\langle \psi|\phi\rangle+ ab^*\left( \langle \psi|\psi\rangle - \langle \phi|\phi\rangle \right) = a^2\langle \phi|\psi\rangle - b^{*2}\langle \psi|\phi\rangle
+\end{math} 
+\end{center}
+
+Possiamo dunque risolvere l'equazione per derivare i valori di \textit{a} e \textit{b}, che sono i componenti della matrice \textit{U}.
+In questo modo abbiamo dunque trovato la matrice \textit{U}.
+
+\textbf{Nota: NORMALIZZAZIONE} I vettori possono non essere normalizzati, ovvero possono non essere unitari. 
+Quindi per renderli unitari possiamo normalizzare, dividendo i vettori per il loro modulo:
+$$
+\vect{\psi''} = \frac{\vect{\psi'}}{\lambda} \quad\quad\quad\vect{\phi''} = \frac{\vect{\phi'}}{\mu} 
+$$
+Non perdono la propriet\'a dell'ortogonalit\'a.
+
+\subsubsection{Composizione circuiti}
+Se per comporre degil stati usiamo il tensor product, possiamo usarlo anche tra matrici per \textbf{comporre i circuiti}.
+
+\paragraph{Tensor Product di matrici}
+Definiamo il Tensor Product tra matrici. Quello che vogliamo \'e:
+$$
+(U\otimes V) (\vect{\phi}\otimes\vect{\psi}) = U\vect{\phi}\otimes V\vect{\psi}
+$$
+
+\begin{definition}[Tensor product tra matrici]
+    Date due matrici: \begin{center}
+        \begin{math}
+            U = \begin{bmatrix}
+                u_{1,1} &u_{1,2}\\ u_{2,1} & u_{2,2}   
+            \end{bmatrix}\quad\quad V = \begin{bmatrix}
+                v_{1,1} & v_{1,2}\\ v_{2,1} & v_{2,2}   
+            \end{bmatrix}
+            \end{math}\\
+            \begin{math}
+                U\otimes V =
+            \begin{bmatrix}
+                u_{1,1} \begin{bmatrix}
+                v_{1,1} & v_{1,2}\\ v_{2,1} & v_{2,2}   
+            \end{bmatrix} 
+            &u_{1,2} \begin{bmatrix}
+                v_{1,1} & v_{1,2}\\ v_{2,1} & v_{2,2}   
+            \end{bmatrix}\\ u_{2,1}\begin{bmatrix}
+                v_{1,1} & v_{1,2}\\ v_{2,1} & v_{2,2}   
+            \end{bmatrix} & u_{2,2}   \begin{bmatrix}
+                v_{1,1} & v_{1,2}\\ v_{2,1} & v_{2,2}   
+            \end{bmatrix}
+            \end{bmatrix} = \begin{bmatrix}
+                u_{1,1} v_{1,1} & u_{1,1}v_{1,2} & u_{1,2}v_{1,1} & u_{1,2}v_{1,2}\\
+                u_{1,1}v_{2,1} & u_{1,1}v_{2,2} & u_{1,2}v_{2,1} & u_{1,2}v_{2,2}\\
+                u_{2,1} v_{1,1} & u_{2,1}v_{1,2} & u_{2,2}v_{1,1} & u_{2,2}v_{1,2}\\
+                u_{2,1}v_{2,1} & u_{2,1}v_{2,2} & u_{2,2}v_{2,1} & u_{2,2}v_{2,2}
+            \end{bmatrix}
+            \end{math}
+    \end{center}
+\end{definition}
+
+\paragraph{Costruzione circuito}
+
+Preso \textit{V} unitario t.c. $\vect{\psi''} = V\vect{0}, \vect{\phi''} = V\vect{1}$ abbiamo:
+\begin{align*}
+    U\otimes I\vect{\sigma} =& \vect{0}\otimes \vect{\psi'}+ \vect{1}\otimes \vect{\phi'} = \vect{0}\otimes \lambda \vect{\psi ''} + \vect{1}\otimes \mu\vect{\phi''} =\\& \vect{0}\otimes \lambda V\vect{0} +\vect{1}\otimes \mu V\vect{1} = (I\otimes V)(\lambda \vect{0}\otimes \vect{0} + \mu\vect{1}\otimes \vect{1})\\\implies \vect{\sigma} =& (U^\dagger\otimes V)(\lambda \vect{0}\otimes \vect{0} + \mu\vect{1}\otimes \vect{1})\\=&  (U^\dagger\otimes V) CNOT\left( \left( \lambda\vect{0} +\mu\vect{1}\right)\otimes\vect{0} \right) \\=&  (U^\dagger\otimes V) CNOT\left( \left( W\vect{0}\right)\otimes\vect{0} \right)
+\end{align*} 
+Per qualche \textit{W} unitaria.
+
+Quindi il circuito che mi prepara lo stato $\vect{\sigma}$ a partire da due qubit $\vect{0}$ \'e:
+
+\begin{align*}
+    \Qcircuit {
+\lstick{\vect{0}} & \gate{W} & \ctrl{1} & \gate{U^\dagger}  & \qw & \rstick{}\\
+\lstick{\vect{0}} & \qw & \targ &  \gate{V}  & \qw& \rstick{} 
+} 
+\end{align*}
+
+Dunque porte come la \textbf{CNOT} sono \textbf{fondamentali per creare entanglement}, soltanto attraverso queste porte riusciamo.
+
+Nell'esempio specifico di prima, scegliamo di usare la cnot raccogliere (entangle) gli $\vect{0}$ quando abbiamo ($\vect{0}$ $\vect{0}$ $\vect{1}$ $\vect{1}$).
+
+% TODO: AGGIUNGERE ESERCIZI CNOT E COMPOSIZIONE
+
+\section{Parallelismo Quantico}
+Nel computing classico siamo abituati ovviamente a scrivere funzioni e circuiti che dato un $x$ producono un certo $f(x)$. Per trattare numeri, abbiamo bisogno di codificarli. Una codifica ad esempio potrebbe essere quella per gli \textit{unsigned int}, in cui semplicemente si codifica il numero in base 2\footnote{ovviamente con k bit abbiamo $2^k$ numeri.}.
+Ogni intero \'e quindi rappresentato da una stringa di \textit{k} bit.
+
+Se passiamo al quantum computing, e volessimo scrivere funzioni classiche, sembra non cambiare troppo. 
+Infatti partiamo da un $x$ per produrre un $f(x)$.
+Possiamo prendere un intero e codificarlo nello stesso modo. (Potremmo poi applicare quelle che sono le operazioni standard a $\vect{1}$ e $\vect{0}$ per ottenere dei risultati simili a quelli del computing classico).
+Ogni intero \'e quindi rappresentato dal corrispondente stato della base computazione di k qubits.
+La limitazione ovviamente arriva dalla necessit\'a ei \textbf{reversibilit\'a} del quantum.
+
+\subsection{Assicurare reversibilit\'a}
+Per ovviare al problema, \'e possibile rendere reversibili le porte. 
+Questo si pu\'o fare banalmente andando a computare $f(x)$ su fili nuovi che partono da 0, e lasciando invariati i cavi di $x$, come \'e possibile vedere in figura \ref{fig:reversible_1}. Per definizione dunque $U_f\vect{x}_n\otimes \vect{0}_m = \vect{x}_n \vect{f(x)}_m$.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.35\linewidth]{images/reversible-from-0.png}
+    \caption{Assicurare la reversibilit\'a. In questo modo noi definiamo la trasformazione $U_f$ come reversibile e unitaria.}
+    \label{fig:reversible_1}
+\end{figure}
+
+Esiste un caso generalizzato.
+Se avessimo un circuito in cui abbiamo dei fili che non ci servono pi\'u, oppure non abbiamo 0 disponibili, possiamo usare lo XOR(bitwise) come si vede in figura \ref{fig:reversible_y}. 
+Utilizzando le propriet\'a dello xor, ovviamente possiamo tornare \textit{y} riapplicando $f(x)$.
+
+Nota: con $y = 0$ ci riduciamo a figura \ref{fig:reversible_1};
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.35\linewidth]{images/reversible-from-y.png}
+    \caption{Generalizzazione di figura \ref{fig:reversible_1}.}
+    \label{fig:reversible_y}
+\end{figure}
+
+Nota: la $f$ che stiamo considerando per ora \'e una $f$ arbitraria classica, ovvero che agisce soltanto su $\vect{1}$ e $\vect{0}$.
+
+\subsection{Superposizioni}
+Quello che vogliamo fare ora \'e computare la funzione $f$ nello stesso momento su valori diversi.
+Le \textbf{superposizioni} (superposition) sono un elemento chiave per cercare di raggiungere questo obiettivo.
+
+Per costruire una superposizione\footnote{Superposizione \'e diverso da entangled. La prima indica che contemporaneamente un qubit \'e 0 o 1.} sfruttiamo l'Hadamard. 
+
+$$
+H\otimes H\vect{0}\otimes \vect{0} = \left(H\vect{0} \right) \otimes \left(H\vect{0} \right) =
+$$
+$$
+= \left( \frsq \vect{0} + \frsq \vect{1} \right) \otimes  \left( \frsq \vect{0} + \frsq \vect{1} \right) = \frac{1}{2}\left( \vect{00} + \vect{01}  + \vect{10} + \vect{11}\right)
+$$
+
+Otteniamo in questo modo una \textbf{superposizione uniforme} su tutti i possibili valori.
+
+Possiamo ovviamente \textbf{generalizzare} ad \textit{n} qubit, utilizzando \textit{n} Hadamards:
+$$
+H^{\otimes n}\vect{0}^n = \frac{1}{2^{n/2}}\sum_{0\leq x < 2^n} \vect{x}_n
+$$
+dove x sono gli interi rappresentati in unsigned int, la n sotto il ket indica "stringhe di lunghezza \textit{n}".
+
+La domanda \'e: \textbf{perch\'e abbiamo bisogno di questo?}
+
+L'idea \'e la seguente: a partire da una funzione classica $f$ e cerchiamo di eseguirla \textbf{nello stesso tempo} su \textbf{tutti i possibili input}.
+In questo modo, con una sola esecuzione posso sapere tutto sulla mia funzione\footnote{Nel computing classico devo per forza usare \textit{x} per trovare $f(x)$. In quantum noi puntiamo a comprendere l'andamento di tutta la funzione $f$ in una singola esecuzione.}.
+
+Ovviamente non \'e cos\'i semplice ma questo \'e il primo passo per raggiungere questo risultato.
+Cerchiamo quindi di costruire il circuito in cui siamo ora:
+
+\begin{multicols}{2}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/first-try-parallelism.jpeg}
+    \caption{Primo tentativo di costruzione del circuito per realizzare parallelismo.}
+    \label{fig:first_try_parallelism}
+\end{figure}
+
+
+    \columnbreak
+$$
+U_f\left( H^{\otimes n} \otimes 1_m \right) \vect{0}_n \vect{0}_m = 
+$$
+$$
+=\frac{1}{2^{n/2}}\sum_{0\leq x < 2^n} U_f \left( \vect{x}_n \vect{0}_m \right)=
+$$
+$$
+=  \frac{1}{2^{n/2}}\sum_{0\leq x < 2^n} \vect{x}_n \vect{f(x)}_m
+$$
+dove $1_m$ \'e l'identit\'a. Serve per far restare 0 gli altri cavi che non partono in superposizione.
+
+\end{multicols}
+
+Questo è anche detto \textbf{Parallelismo quantico}, ovvero possiamo computare la funzione f su \underline{tutti i possibili input} contemporaneamente. 
+Tuttavia ci sono dei problemi:
+il risultato è nello stato finale, ovvero in una \textbf{superposizione}. 
+Ovviamente questa superposizione deve essere misurata affinché possiamo capire cosa ci sia, ed in questo momento avviene il collasso ad un singolo valore (dunque otterremo il valore di $f(x)$ \underline{per un solo input randomico}).
+Una possibile soluzione potrebbe essere quella di clonare il risultato e misurarlo diverse volte.
+Tuttavia ...
+
+\subsection{No cloning Theorem}
+Non é possibile copiare un qubit \textbf{arbitrario}.  
+Non esiste nemmeno una clonazione \textbf{approssimativa}, semplicemente non si puó fare.
+\begin{theorem}[No cloning Theorem]
+    Non esiste alcuna trasformazione unitaria U che prende in input lo stato $\vect{y}_n\vect{0}_n$ e come output $\vect{y}_n\vect{y}_n$ per ogni y.
+\end{theorem}
+
+\begin{proof}
+    É una conseguenza della linearitá.
+    Dimostriamo per assurdo. Ipotizziamo che esista, ovvero $\exists U \text{ t.c. }  U\vect{y}\vect{0} = \vect{y}\vect{y}$. Abbiamo dunque (per linearitá\footnote{posso distribuire U}) che $ U ((a\vect{y} + b\vect{x})\vect{0}) = aU(\vect{y}\vect{0}) + bU(\vect{x}\vect{0}) = a\vect{y}\vect{y} + b\vect{x}\vect{x}$.
+    Tuttavia, poiché posso clonare qualsiasi stato, posso utilizzare direttamente U: $ U ((a\vect{y} + b\vect{x})\vect{0}) = (a\vect{y} + b\vect{x})(a\vect{y} + b\vect{x}) = a^2\vect{y}\vect{y} + b^2\vect{x}\vect{x} + ab \vect{y}\vect{x} + ab \vect{x}\vect{y}$ 
+    Gli unici casi in cui i risultati sono uguali sono o $a = 0$ o $b = 0$. 
+    Questo significa che non posso copiare qubit arbitrari.
+\end{proof}
+
+
+\begin{theorem}[No approximate cloning theorem]
+    Non esiste alcuna trasformazione unitaria U che prende in input lo stato $\vect{y}_n\vect{0}_n$ e approssima l'output $\vect{y}_n\vect{y}_n$ per ogni y.    
+\end{theorem}
+\begin{proof}
+Dimostriamo per assurdo. Supponiamo che esista U t.c.:
+$U\vect{y}\vect{0} \sim \vect{y}\vect{y} $ e $U\vect{x}\vect{0} \sim \vect{x}\vect{x}$
+
+Ricordando che: 1. $\langle \psi_1 \otimes\psi_2 | \phi_1 \otimes\phi_2 \rangle = \langle \psi_1| \phi_1\rangle \langle \psi_2| \phi_2\rangle$, 2.  $\langle \psi| \phi\rangle = \langle U \psi| U \phi\rangle$ , 3.  $\langle \psi| \psi\rangle = 1$ :
+\begin{align*}
+    \langle y0|x0 \rangle &\sim \langle yy|xx \rangle \stackrel{\text{per 1}}{\implies} \\  
+    \langle y|x \rangle \langle 0|0 \rangle &\sim \langle y|x \rangle\langle y|x \rangle \stackrel{\text{per 3}}{\implies}\\
+    \langle y|x \rangle &\sim \langle y|x \rangle^2
+\end{align*}
+Questo vale solo se l'inner product é molto vicino allo 0 (ortogonale) oppure a 1 (uguale).
+Questo significa che se riesci a copiare qualcosa (ad esempio y), allora puoi copiare soltanto altri stati molto vicini a y o ortogonali a y (sempre con un piccolo errore). Altrimenti l'errore è alto.
+\end{proof}
+
+Cosa possiamo fare quindi?
+Se misuro uno superstato non mi allontano troppo da ció che riesco a fare con la computazione classica.
+
+Se provassi a copiarlo (ad esempio per ripetere la misurazione piú volte) fallirei.
+
+Dobbiamo quindi non misurare direttamente ma lavorare ancora di piú sui qubit per misurare NON f(0) o f(1) ma per misurare una combinazione di f su valori diversi. 
+In realtà non scopriamo tutti i valori ma possiamo estrarre delle informazioni riguardo le relazioni tra i valori di f (esempio: periodicitá di una funzione).
+
+Arriviamo quindi alle applicazioni.
+
+\section{II modulo}
+\subsection{Intro}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/quantum-stack.png}
+\end{figure}
+Nel secondo modulo vedremo: 
+\begin{itemize}
+    \item Algoritmi Quantici: focus principale sull'efficienza, unico motivo di interesse nel quantum; 
+    \item Protocolli quantici: comunicazione e protocolli di sicurezza (esempio: Quantum Telepaty);
+    \item Codici per la correzione di errori quantici (\textbf{decoherence}): per ora soltanto astrazione. Attualmente riusciamo implementare fisicamente, tenendo basso l'errore, soltanto algoritmi che impiegano meno di 20 qubits.
+\end{itemize}
+\subsection{Complessità dei circuiti}
+Parliamo di:
+\begin{itemize}
+    \item \textbf{Task}: problema, formulato spesso con simboli matematici. Siamo interessati in task formulati con funzioni matematiche:
+    \begin{itemize}
+        \item \textbf{Booleane}: ${0,1}^n \to {0,1}^m$ che indichiamo con $\mathcal{F}_m^n$
+    \item \textbf{Parametriche Booleane}:$\mathcal{F}_q^p \to \mathcal{F}_m^n $ \textbf{funzionali} (funzioni di funzioni). Ad esempio, preso $p = q = 2, n=0 \text{e} m=1$, il task di controllare se la funzione in input ritorna 00 su tutti i suoi possibili input.
+    \end{itemize}
+    \item \textbf{Process}: artefatto, in questo caso il \textbf{circuito}, l'algoritmo che deve essere eseguito
+\end{itemize}
+La relazione é che $\text{Process} \stackrel{solves}{\to} \text{Task}$.
+
+\begin{itemize}
+    \item Un \textbf{\textit{processo classico}} sará un \textbf{circuito booleano} $\mathcal{C}$.
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/boolean-circuit.png}
+    \end{figure}
+    Computa una funzione booleana $f_{\mathcal{C}}\in \mathcal{F}_m^n t.c. f_{\mathcal{C}}(x) = y$ precisamente quando $\mathcal{C}$ eseguendo x sugli n fili input produce y sugli m fili in output.
+
+    Questo può essere generalizzato per le booleane parametriche: necessitiamo  di un gate che permette di fare la "chiamata di funzione" su tot input.
+
+    La grandezza (\textit{size}) di $\mathcal{C}$ é una \textbf{misura} di quante risorse consumerá il circuito $\mathcal{C}$ quando sará eseguito.
+    La grandezza di $\mathcal{C}$ (indicata con $|\mathcal{C}|$ puó essere misurata in diversi modi: 
+    \textbf{width}, ovvero il massimo numero di bit necessari nella computazione (nota: se abbiamo n bit in input, per la computazione potrebbero servire anche piú di n bit);\textbf{depth}, ovvero la lunghezza massima tra i path da output a input (si puó usare come una sorta di riferimento temporale); \textbf{numero di gate}, che rappresenta un upperbound di depth e width.
+
+    Se parliamo di funzioni parametriche booleane, un interessante parametro è il \textbf{numero di chiamate} del gate speciale che computa la funzione parametrica (che indichiamo con  $|\mathcal{C}|_P$).
+    \item Un \textbf{\textit{processo quantico}} è semplicemente un \textbf{circuito quantico}:
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/quantum-circuit.png}
+    \end{figure}
+    Possiamo generalizzare quanto detto per i circuiti classici, considerando che:
+    \begin{itemize}
+        \item i circuiti quantici hanno un comportamento probabilistico. 
+        Questo implica che un circuito \textit{computa} una funzione $f_Q\in \mathcal{F}_m^n$ se mantiene bassa la probabilitá di errore
+        \item tralasciando la misurazione, il circuito $\mathcal{Q}$ deve essere \textbf{reversibile}.
+        Quindi dobbiamo supporre che un circuito che computare $f\in \mathcal{F}_m^n$ deve avere $k = n+m+r$ input (input + output + altro) e output t.c., con alta probabilitá, su input $\vect{x}\otimes \vect{y}\otimes\vect{0^{\otimes r}}$ produrrà $\vect{x}\otimes \vect{f(x) \oplus y}\otimes\vect{\psi}$, dove $\vect{0^{\otimes r}}$ rappresenta qubit ausiliari necessari nella computazione e $\psi$ rappresenta garbage
+    \end{itemize}
+\end{itemize}
+
+Ora ci chiediamo: esiste qualche funziona parametrica $f$ t.c. ci sia un circuito quantico $\mathcal{Q}$ che computa $f$ t.c. tutti i circuiti booleani classici $\mathcal{C}$ che calcolano $f$ lo fanno con $|\mathcal{Q}| < |\mathcal{C}|$?\footnote{Sostanzialmente ci chiediamo se esiste una funzione che riusciamo a calcolare con meno risorse usando un circuito quantico rispetto ad uno classico.}
+Spoiler: si. Ora ne analizzeremo alcuni (a partire da cose inutili a cose utili).
+
+Ció che dobbiamo fare ora peró é \textbf{uniformare} la teoria della complessitá per poter confrontare i circuiti classici con quelli quantici (ovvero dobbiamo mappare le turing machines). 
+
+Nella computazione classica, una \textit{circuit family} è una famiglia $\{\mathcal{C}_n\}_{n\in N}$ t.c. $\forall n\in N$, il circuito $\mathcal{C}_n$ computa una funzione in $\mathcal{F}_1^n$. Questa famiglia di circuiti, puó essere vista anche come una funzione: $f_{\{\mathcal{C}_n\}}: \{0,1\}^* \to \{0,1\}$ (problemi decisionali).
+La classe dei linguaggi ($\subseteq \{0,1\}^*$) che puó essere computata dalla famiglia dei circuiti classici che hanno un bound polinomiale e sono generati in tempo polinomiale attraverso algoritmi é \textbf{precisamente $\mathcal{P}$}.
+
+Possiamo fare un discorso simile per i circuiti quantici: se consideriamo la famiglia dei circuiti \textit{quantici} di grandezza polinomiale generati in tempo polinomiale \textit{classico} otteniamo una classe chiamata $\mathcal{BQP}$, ovvero Bounded Quantum P (bounded é per gli errori).
+
+Se consideriamo la macchina di Turing, la funzione di transizione puó essere simulata da un circuito perché \textbf{È} un circuito.
+Esistono anche le QUantum Turing Machine ma in questo ambito si lavora con i circuiti.
+
+
+\section{Algoritmi Quantici}
+\subsection{Deutsch problem}
+Nel Deutsch Problem, siamo interessati nel determinare se una funzionee parametrice $f\in \mathcal{F}_1^1$ é \textbf{costante} (i.e. $f(0) = f(1)$).
+
+Nella computazione classica, dobbiamo per forza invoare $f$ \textbf{due volte}, altrimenti non potremmo mai saperlo. 
+In quantum riusciamo a farlo invocando la funzione soltanto una volta.
+
+Partiamo assumendo che esista un gate $\mathcal{U}_f$ che computa $f$ senza utilizzare altri qubit ausiliari: 
+$$
+\mathcal{U}_f(\vect{x}\vect{y}) = \vect{x}\vect{y\oplus f(x)}
+$$
+
+
+Il circuito che risolve il problema di Deutsch é: 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/deutsch-circuit.png}
+\end{figure}
+
+Possiamo verificarne la correttezza:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/deutsch-correctness.png}
+\end{figure}
+
+Se analizzassimo l'interpretazione equazionale (abbiamo 4 possibili funzioni da 2 qubit a 2 qubit):
+
+\begin{figure}[h!]
+  \tabcolsep=0pt
+  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccc}
+    \includegraphics[width=0.3\textwidth]{images/deutsch-equational-1.png} &
+    \includegraphics[width=0.3\linewidth]{images/deutsch-equational-2.png} &
+    \includegraphics[width=0.3\linewidth]{images/deutsch-equational-3.png} 
+  \end{tabular*}
+\end{figure}
+
+\subsection{Bernstein-Vazirani problem}
+Dati $a,x \in \{0,1\}^n$, scriviamo $a\cdot x$ per indicare l'inner product bit a bit di $a$ e $x$: $a_1x_1\oplus a_2x_2\oplus ...\oplus a_nx_n$.
+
+Il problema di Bernstein Vazirani ha a che fare con quelle funzioni $f_a \in \mathcal{F}_1^n$\footnote{1 perché abbiamo un solo bit in output a causa dell'inner product bit a bit} t.c. $f_a(x) = a\cdot x$.
+
+Vogliamo \textbf{determinare \textit{a}} invocando $f_a$, cercando di minimizzare il numero di invocazioni.
+
+Nella computazione classica, non possiamo svolgere il task senza invocare $f_a$ \textit{n} volte\footnote{in input abbiamo stringhe di lunghezza n. Possiamo, per ogni chiamata, trovare l'i-esimo bit di \textit{a}. Quindi abbiamo bisogno di \textit{n} chiamate $s\in\{0,1\}^n$}.
+Con la computazione Quantica, basta invocare $f_a$ \textbf{solo una volta}.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/bern-vazi-circuit.png}
+\end{figure}
+
+Vediamo come funziona:
+$$
+\vect{000...0} \stackrel{\mathcal{H}^{\otimes n}}{\to} \frac{1}{\sqrt{2^n}} \sum_{x\in\{0,1\}^n}\vect{x}\stackrel{f_a}{\to} \frac{1}{\sqrt{2^n}} \sum_{x\in\{0,1\}^n} (-1)^{a\cdot x}\vect{x} \stackrel{\mathcal{H}^{\otimes n}}{\to} \vect{a}
+$$
+
+Un esempio:
+\newpage
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/bern-vazi-example.png}    
+\end{figure}
+
+Interpretazione: (usando $|a| = 5$)
+\begin{figure}[h!]
+  \tabcolsep=0pt
+  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccc}
+    \includegraphics[width=0.35\linewidth]{images/bern-vazi-equational-1.png} &
+    \includegraphics[width=0.25\linewidth]{images/bern-vazi-equational-2.png} &
+    \includegraphics[width=0.35\linewidth]{images/bern-vazi-equational-3.png} 
+  \end{tabular*}
+\end{figure}
+
+\subsection{Simon problem}
+Come in Bernstein-Vazirani, anche nel problema di Simon abbiamo a che fare con una $f$ che dipende da un $a\in\{0,1\}^n$. Tuttavia, questo é una funzione definita in $\mathcal{F}^n_n$. 
+Sappiamo che $f$ é \textit{\textbf{periodica} modulo a}, ovvero $$ f(x) = f(y) \iff y = x\oplus a \iff x\oplus y = a \quad \forall x,y\in\{0,1\}^n$$
+
+Siamo interessati a computare funzionali parametrici, che hanno come input una funzione $f\in\mathcal{F}^n_n$ é periodica di modulo $a$ (come scritto su), e vogliamo determinare quale sia il \textbf{numero minimo} di invocazioni di $f$ per trovare $a$.
+
+Classicamente, possiamo risolvere (con alta probabilitá) soltanto invocando \textit{f} circa $2^n$\footnote{Dobbiamo provare fino a quando 2 input diversi hanno stesso output. Otteniamo tempo esponenziale perché é un approccio \textbf{brute force}.} volte, ovvero \textbf{esponenziale}.
+Approccio classico:
+Faccio \textit{k} query e ottengo $y_1 = f(x_1,...,y_k = f(x_k)$. Ora:
+\begin{itemize}
+    \item se $\forall i,j \in \{1,...,k\} | y_i \neq y_k \implies $ sappiamo che $a \neq x_i \oplus x_j$
+    \item se $y_i = y_k \implies a = x_i \oplus x_j$
+\end{itemize}
+$\implies$ caso pessimo è esponenziale, in quanto ci sono $\frac{k(k-1)}{2}$ paia di indici distinti nell'insieme $\{1,...,k\}$, quindi il numero di query nel caso pessimo é esponenziale.
+
+Il circuito quantico impiega \textbf{tempo polinomiale}. 
+Analizziamo cosa fa il circuito:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/simon-circuit.png}
+\end{figure}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/simon-explanation.jpeg}
+\end{figure}
+
+Il circuito da solo non risolve il problema. Quello che facciamo é usare il circuito piú volte in questo modo:
+\begin{enumerate}
+    \item $i \leftarrow 1$
+    \item Applicazione di $\mathcal{C}_{SIMON}$ per ottenere, nei primi \textit{n} qubit, il valore $\vect{x_i}$ 
+    \item Controlla ce il sottospazio generato dai vettori $x_1,...,x_n$ abbia dimensione minore o uguale a $n-1$. Se si, vai allo step 4, altrimenti incrementa \textit{i} di 1 e vai allo step 2
+    \item Risolvi il sistema lineare di equazioni:
+    $$\systeme*{a\cdot x_1 = 0, \vdots , a\cdot x_i = 0}$$
+    \item Se esiste una soluzione unica non nulla di \textit{a}, allora ritornala, altrimenti fail.
+\end{enumerate}
+
+Nota: la probabilitá di fallire dipende dal numero di iterazioni che facciamo. 
+Infatti, vogliamo che il rank della matrice (del sistema lineare) sia massimo, ma nessuno ce lo garantisce. 
+Quindi, potenzialmente, più volte invochiamo il circuito e piú migliora la probabilità.
+
+\subsection{Shor's Algorithm}
+L'algortitmo di Shor é considerato uno dei \textbf{risultati} piú importanti nella teoria della computazione. 
+É il \textbf{primo} problema che risolve un problema vero, e non una sorta di gioco.
+
+Il problema risolto include:
+\begin{itemize}
+    \item rompere \textbf{RSA}, uno degli schemi di criptazione molto usato (basato su chiave pubblica)
+    \item \textbf{Fattorizzazione} di interi
+    \item Logaritmo discreto.
+\end{itemize}
+
+A partire da questo algoritmo, é nata la \textbf{post-quantum cryptography}.
+
+In ogni caso, anche questo si tratta di un algoritmo basato sul \textbf{period finding}. 
+Stiamo quindi sempre cercando il periodi di una funzione, che in questo caso é piú aritmetica (rispetto alla stringhe prese in considerazione da Simon). 
+Usiamo proprio la somma tra numeri naturali nella definizione (unica differenza con Simon)
+\subsubsection{Preliminari}
+
+Sia $\mathbb{G}_N$ l'insieme di tutti gli interi positivi (1 incluso) che sono strettamente minori di \textit{N} e che non hanno fattori primi in comune con \textit{N}.
+
+Definiamo la \textbf{moltiplicazione modulo \textit{N}} in questo modo:
+$$(x,y) \mapsto  x\cdot y \;\; mod \;N$$
+
+La moltiplicazione modulo \textit{N} é ben definita, associativa, ha identitá (1) e ha un inverso.
+\'E dunque un \textbf{gruppo} (finito).
+
+La cardinalitá $\Phi(N)\in \mathbb{N}$ di $\mathbb{G}_N$ è \textit{al massimo} $N-1$
+
+Quando \textit{N} é \textbf{primo}, allora il \textit{teorema di Fermat} ci dice che 
+$$
+\forall a\in \mathbb{G}_N \quad\quad a^{N-1} \equiv 1 \;\; mod \;N
+$$
+
+Una variazione molto interessante del teorema di Fermat è quella in cui $ N = pq$ dove \textit{p,q} sono \textbf{primi}:
+$$
+\forall a\in \mathbb{G}_N \quad\quad a^{(p-1)(q-1)} \equiv 1 \;\; mod \;N
+$$
+
+In questo caso $\Phi(N) = (p-1)(q-1)$ ($< N-1$)
+
+
+Nota (alla base di RSA): il numero $N-1$ è ovviamente facilmente computabile a partire da $N$, mentre $(p-1)(q-1)$ assolutamente no. 
+Il modo più efficiente è fattorizzando N
+
+In generale, 
+$$\forall a\in \mathbb{G}_N \quad\quad a^{\Phi(N)} \equiv 1 \;\; mod \;N$$
+
+L'\textbf{ordine} di un elemento $n \in \mathbb{N}$ é il piú piccolo \textit{r} t.c. $$n^r\equiv 1$$
+L'ordine di un elemento divide sempre l'ordine del gruppo ($\Phi(N)$)
+Se l'ordine di un elemento é uguale all'ordine del gruppo, allora quell'elemento é un \textit{generatore} del gruppo.
+Altrimenti \textit{n} genera un \textbf{sottogruppo} contenente tutti quegli elementi che possono essere scritto $$n^k \;\; mod \;N \text{ dove } k\in Z$$
+
+$\langle n \rangle\footnote{Spazio generato} = \langle m \rangle \implies $ \textit{n} e \textit{m} hanno lo stesso ordine.
+
+\subsubsection{Rompere RSA}
+\textbf{RSA} é uno degli schemi di criptazione basati a chiave pubblica piú comuni.
+Ci sono due parti, Alice e Bob che vogliono comunicare su un canale non sicuro. Quello che succede è questo:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/asymmetric-enc.png}
+\end{figure}
+
+L'idea che c'é dietro é:
+
+dato $N = pq$ (\textit{p} e \textit{q} sono primi abbastanza grandi, espimibili ad esempio con 256 bit) e dati $c,d \;|\; cd\equiv 1\;\; mod \;\Phi(N)$, la chiave pubblica sará $(N,e)$, la chiave privata $(N,d)$.
+
+La sicurezza si basa sul fatto che conosciamo soltanto N, non \textit{p} e \textit{q}, quindi computare $\Phi(N)$ non é assolutamente semplice. Se conoscessimo $\Phi(N)$ potremmo calcolare semplicemente l'inverso.
+
+\begin{itemize}
+    \item un messaggio è semplicemente un elemento all'interno di $\mathbb{G}_N$
+    \item dato un messaggio $m\in \mathbb{G}_N$ e una chiave pubblica $(N,e)$, il messaggio criptato sará: $Enc(m,(N,e)) = m^e\;\; mod \;N$
+    \item dato un testo cifrato $c\in \mathbb{G}_N$ e una chiave privata $(N,d)$, il messaggio decrpitato sará: $Dec(c,(N,d)) = c^d\;\; mod \;N$
+\end{itemize}
+$$
+Dec(Enc(m,(N,e)),(N,d)) = m
+$$
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/rsa-correctness.png}
+\end{figure}
+
+Il primo metodo per \textbf{rompere} RSA consiste in:
+dato $N = pq$ e $e \in \mathbb{G}_{(p-1)(q-1)}$, determina \textit{d} t.c. $$ed\equiv 1 \;\; mod \;(p-1)(q-1)$$
+Questo é il caso in cui cerchiamo di determinare la chiave privata dalla chiave pubblica. 
+L'operazione di inversione di \textit{e} é aritmeticamente fattibile (usando le definizioni date prima), tuttavia in questo caso il problema è calcolare $(p-1)(q-1)$, anche se abbiamo \textit{N}.
+
+Il problema è in questo caso la \textbf{fattorizzazione} di \textit{N}, in quanto se riuscissimo a fattorizzarlo potremmo poi calcolare $p-1$ e $q-1$ facilmente (a partire da \textit{q} e \textit{p})\footnote{L'algoritmo di Shor è spesso presentato come un algoritmo di fattorizzazione, ma in realtá, come vedremo, si tratterà di period finding. E sfruttando il period finding si riesce a fattorizzare.}
+
+Il secondo metodo invece si basa sul \textbf{period finding}. Partiamo da questo presupposto:
+se possiamo trovare, dato \textit{c} e \textit{N}, il piû piccolo $r \ge 1$ t.c. $$c^r\equiv \;\; mod \; N$$\footnote{ovvero riusciamo a calcolare l'order del ciphertext}, possiamo trovare il messaggio in modo abbastanza naturale.
+
+Vediamo quindi ora \textbf{perché il period finding riesce a rompere RSA}.
+
+\begin{itemize}
+    \item Innanzitutto, osserviamo come l'ordine di \textit{c} e l'ordine di \textit{m} deve essere lo stesso.
+    \item in realtà, \textit{c} è una potenza di \textit{m} e \textit{m} è una potenza di \textit{c}. \footnote{banalmente quello che fa RSA é calcolare delle potenze, di cui non conosciamo l'esponente.} Questo significa che \textit{m} è un \textbf{elemento} del sottogruppo generato da \textit{c} e viceversa: $$c\in\langle m\rangle \quad\quad m\in\langle c\rangle$$
+    Questo significa che i due sottogruppi devono essere uguali, i.e. $\langle m \rangle = \langle c \rangle$, ovvero l'ordine di \textit{m} e l'ordine di \textit{c} deve essere lo stesso (primo punto).
+    \item Da adesso in poi, consideriamo \textit{r} come l'\textbf{ordine} di \textit{c} (ovvero il periodo).
+    \item Poiché $e \in \mathbb{G}_{(p-1)(q-1)}$ e \textit{r} \textbf{divide} $(p-1)(q-1)$, quindi $gcd(e,r) = 1$\footnote{non ci sono fattori comuni tra \textit{r} e \textit{e}}. 
+    \item prendiamo il resto della divisione di $e \;\; mod \; r$:
+    $$e = k\cdot r + e'$$
+    \item \textit{e'}, ovviamente, non puó avere fattori comuni con \textit{r}, altrimenti anche \textit{e} li avrebbe, ovvero $gcd(e',r)=1$
+    \item per come è definito $\mathbb{G}_N$, esiste un inverso $d'$ di $e' \;\; mod \; r$, i.e. $$e'\cdot d'\equiv 1  \;\; mod \; r$$
+    \item dunque possiamo concludere che:
+    $$ed'\equiv (kr+c')d' \equiv krd'\footnote{Si cancella in $\;\; mod \; r$ in quanto è multiplo di \textit{r}} + e'd'\equiv e'd' \equiv 1\;\; mod \; r$$
+    in altre parole, otteniamo un inverso di $e \;\; mod \; r$, ovvero $d'$.
+    \item Possiamo ora determinare il messaggio:
+    $$c^{d'}\equiv m^{ed'} \equiv m^{1+kr}\equiv m\cdot (m^kr)\equiv m \;\; mod \; N$$
+\end{itemize}
+
+L'algoritmo di Shor quindi é un algoritmo che computa il \textbf{periodo di una funzione} della forma: $$c\mapsto b^x \;\; mod \; N$$ dove b é parte stessa della funzione (ovvero diverse \textit{b}
+ corrispondono a diverse funzioni). Nel caso di RSA, $b = c$.
+Possiamo ricondurci quindi a quello che è l'algoritmo di Simon, tuttavia abbiamo un dominio differente (quello di Simon è piú semplice, in quanti si utilizzano insiemi di stringhe, qui invece abbiamo a che fare con numeri naturali, XOR é piú semplice sulle stringhe rispetto all'addizione di numeri naturali)\footnote{Perioditicitá dello XOR é molto piú semplice del periodi aritmetico}.
+
+Proviamo però ad applicare lo stesso ragionamento (naive) utilizzato con Simon, ovvero computiamo quindi parallelamente delle superposizioni massime usando le Hadamard delle stringhe di bit e poi le usiamo come input per un oracolo che computa la funzione descritta su e poi misuriamo l'output. Lo stato risultante sará:
+$$ 
+\vect{\Psi}_n=\frac{1}{\sqrt{m}}\sum^{m-1}_{k=0}\vect{x_0+kr}$$
+dove l'input che misuriamo é $\vect{x_0+kr}$.  Compare la \textit{r}, che è il periodo che stiamo cercando, dove \textit{m} é il piú piccolo intero t.c. $mr+x_0\ge 2^n$ 
+
+Siamo ancora lontani peró dalla soluzione, in quanto $x_0$ ci tiene ancora lontano da \textit{kr} (poiché non si parla di stringhe di bit come in Simon, qui non abbiamo solo due possibilitá, ovvero 0 o 1).
+
+Un altro problema é la presenza dell'esponente \textit{x} nella funzione. 
+Questo rende la funzione non semplice da computare.
+Non possiamo servirci di algoritmi naive come quelli visti fino ad ora per tradurlo in un circuito (banalmente non possiamo fare un for poiché avremmo un numero di moltiplicazioni troppo grande). 
+Con algoritmi naive é esponenziale in x, mentre dobbiamo renderlo logaritmico in x (utilizzeremo la Fast exponentiation).
+ 
+Non possiamo quindi procedere come in Simon, dobbiamo applicare qualcosa di leggermente piú complesso.
+
+\paragraph{Quantum Fourier Transform} 
+Attraverso la QFT (Quantum Fourier Transform) andremo a eliminare quell'$x_0$ per ottenere soltanto \textit{kr}.
+
+Ovviamente si basa sulla trasformata di Fourier (che obv non abbiamo studiato)\footnote{tutta la parte dello studio del perché la trasformata di Fourier è fondamentale nello studio di funzioni periodiche non è argomento di questo corso.}.
+Vediamo quindi cosa succede quando utilizziamo la QFT come un operatore unitario su un elemento della base computazionale.
+
+$$
+\mathbf{U}_{FT}^n\vect{x} = \frac{1}{2^{\frac{n}{2}}}\sum_{y=0}^{2^n-1} e^{2\pi i\frac{xy}{2^n}}\vect{y}
+$$
+
+Otteniamo dunque un vettore in superposizione massima. Questo prima lo avevamo ottenuto solamente con le Hadamard, che quindi giocheranno un ruolo fondamentale anche qui.
+Possiamo considerare la QFT una "variazione sul tema" dell'operatore Hadamard.
+
+Tuttavia, cambia molto il coefficiente, che si tratta di un numero complesso.
+
+$\mathbf{U}_{FT}^n$ puó essere implementato con un circuito che utilizza soltanto gate unitari e di grandezza quadratica.
+
+Vediamo come applicarlo a quello visto prima e perché puó essere utile.
+
+\begin{align*}
+    \mathbf{U}_{FT}\left( \frac{1}{\sqrt{m}}\sum_{k=0}^{m-1}\vect{x_0+kr} \right) =&
+    \frac{1}{2^{\frac{n}{2}}}\sum_{y=0}^{2^n-1}\frac{1}{\sqrt{n}}\sum_{k=0}^{m-1} e^{2\pi i \frac{\left( x_0+kr \right) y}{2^n}}\vect{y}=\footnote{Sfruttiamo la somma all'esponente per dividere in due la sommatoria. Buttiamo fuori la parte relativa a $x_0$}&\\
+    =&\sum_{y=0}^{2^n-1}e^{2\pi i \frac{x_0y}{2^n}} \frac{1}{\sqrt{2^nm}}\left(\sum_{k=0}^{m-1} e^{2\pi i \frac{kr y}{2^n}}\right)\vect{y}
+\end{align*}
+
+Quindi, se ora andassimo a \textit{tutti} i bit, la probabilità di osservare y misurando i registri di input é:
+\begin{align*}
+    p(y) =& \left| \alpha_y \right|^2 
+    =&\footnote{$\alpha_y$ è il coefficiente di y. La sommatoria si toglie in quanto noi cerchiamo la probabilitá \textit{per uno specifico y}, non ha senso dunque fare la sommatoria, che produrrebbe risultati uguali per tutte le y. } \\ 
+    =&  \left|e^{2\pi i \frac{x_0y}{2^n}} \frac{1}{\sqrt{2^nm}}\left(\sum_{k=0}^{m-1} e^{2\pi i \frac{kr y}{2^n}}\right) \right|^2=
+    \\ 
+    =& \left| e^{2\pi i \frac{x_0y}{2^n}}\right|^2 \cdot \left|\frac{1}{\sqrt{2^nm}} \right|^2 \cdot \left|\sum_{k=0}^{m-1} e^{2\pi i \frac{kr y}{2^n}} \right|^2=\footnote{$\left| e^{2\pi i \frac{x_0y}{2^n}}\right|^2 = 1$ per alcune proprietá dei numeri complessi (legge di Eulero)}
+    \\ 
+    =& 1\cdot \frac{1}{2^nm}\cdot \left|\sum_{k=0}^{m-1} e^{2\pi i \frac{kr y}{2^n}} \right|^2
+\end{align*}
+
+Questo risultato è importante in quanto otteniamo uno stato in cui se misuriamo i registri di input otterremo \textit{\textbf{y}} con una probabilitá che \textbf{dipende} da \textit{y} e \textbf{da \textit{kr}}, ma \textbf{non da $x_0$}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/shor-circuit.png}
+    \caption{Circuito di Shor}
+\end{figure}
+
+Le differenze tra il circuito di Shor e quello di Simon sono 2:
+\begin{enumerate}
+    \item Invece di applicare le Hadamard nei registri di input applichiamo le $U_{FT}$, e questo perché dobbiamo togliere la $x_0$.
+    \item ci sono $2^n$ qubits nei registri di input.
+    Sono qubit che serviranno nel \textbf{post-processing}, per la riduzione degli errori. Altrimenti all'oracolo basterebbero \textit{n} bit per calcolare la funzione.
+\end{enumerate}
+
+ \paragraph{Post-processing}
+ misurando \textit{y}, tuttavia, non otteniamo quello che ci interessa, ovvero \textit{r}. Abbiamo bisogno di un po' di post-processing.
+
+ \begin{theorem}
+     La probabilitá $p(y)$ ha valore massimo quando \textit{y} é vicino ai \textbf{multipli interi} di $\frac{2^{2n}}{r}$, dove $2^{2n}$ é il numero di elementi in superposizione (perché abbiamo usato $U_{FT}^{2n}$, ovvero parametrizzata con $2n$
+ \end{theorem}
+
+Se \textit{y} si trova ad una distanza di massimo $\frac{1}{2}$ da $\frac{j2^{2n}}{r}$ per qualche intero \textit{j}, allora $$\left| \frac{y}{2^{2n}} -\frac{j}{r} \right| \le \frac{1}{2^{2n+1}}$$
+
+Una volta computato $ \frac{y}{2^{2n}}$ e  $\left| \frac{y}{2^{2n}} -\frac{j}{r} \right| \le \frac{1}{2^{2n+1}}$ si possono ottenere $j_0, r_0$ t.c. $\frac{j_0}{r_0}=\frac{j}{r}$ e $j_0, r_0$ sono \textbf{irriducibili}. \footnote{Continuous Fraction Development, fa parte dell'Analisi Numerica (classica).}
+In particolare, $r_0$ è una divisore di \textit{r}.
+
+Successivamente, si controllare se $r_0$ è a sua volta un \textbf{periodo}. La probabilità che $r_0 = r$ è abbastanza alta ($>40\%$).
+Se $r_0$ non è un periodo, bisogna ricominciare da 0. Ci sono delle tecniche di ottimizzazione (ad esempio cercando delle \textit{r} vicine a $r_0$.
+
+\textbf{Ripetendo più volte} tutto comunque si riesce a trovare \textit{r}.
+
+La cosa positiva di questi problemi è che sono facilmente verificabili (ovvero sono in NP).
+
+\subsubsection{Fast Exponentiation}
+La computazione della funzione $x\mapsto b^x \;\; mod\; N$ é necessaria per la computazione dell'algoritmo di Shor (ovvero dobbiamo implementare l'oracolo $U_f$.
+In particolare, abbiamo bisogno che questo sottocircuito non sia eccessivamente grande.
+Ovviamente iterando sul numero delle moltiplicazioni \textbf{non funziona}, in quanto, nel caso pessimo, il numero di iterazioni è uguale a \textit{x} (richiede tempo esponenziale).
+
+Abbiamo quindi bisogno di un algoritmo chiamato \textbf{fast exponentiation}, che usa 3 registri: l'input register \textit{x}, l'output register \textit{y}, work register \textit{w}.
+\begin{itemize}
+    \item All'inizio, $y = 1$ e $w=b$.
+    \item Iterativamente, facciamo l'update di \textit{y} e \textit{w}, facendo $w^2$ e moltiplicando \textit{y} per \textit{w} sse il bit corrispondente di \textit{x} è 1.
+    \item il risutato è in \textit{y}
+\end{itemize}
+
+In questo modo, il processo iterativo é eseguito \textbf{non} un numero pari a \textit{x} di volte, ma pari ai bit di \textit{x} (ovvero la lunghezza della stringa \textit{x)}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/fast-exponentiation-example.png}
+    \caption{Esempio della fast exponentiation. In questo caso usiamo 6 iterazioni invece di 45.}
+\end{figure}
+
+Questo algoritmo funziona molto bene perché siamo in aritmetica con modulo. Ovvero, non dobbiamo preoccuparci della lunghezza dei risultati intermedi (ad esempio $b^64$ potrebbe essere difficile da computare) perchè tagliamo ad \textit{N}.
+
+\subsubsection{Factoring e Logaritmo Discreto}
+Lo stesso algoritmo di Shor possiamo risolvere altri problemi interessanti:
+\begin{itemize}
+    \item \textbf{Integer Factorization}: dopo aver controllato se \textit{N} é primo (si fa in tempo polinomiale). Se non lo é, genera $1<a<N$ randomicamente. Se \textit{a} é coprimo con \textit{N} (ovvero gcd, polinomiale), calcola il periodo \textit{r} di $x\mapsto a^x\;\;mod\;N$. Se \textit{r} è pari, allora qualsiasi fattore di \textit{N} è un fattore di $a^{r/2}-1$ o di $a^{r/2}+1$ (dividiamo in due sottoproblemi - Divide et Impera).
+    \item \textbf{Discrete Logarithm}: abbiamo bisogno anche qui di preprocessing e postprocessing.
+\end{itemize}
+
+\subsection{Grover's Algorithm}
+Non abbiamo un guadagno esponenziale, tuttavia questo é comunque interessante.
+
+Il problema è la ricerca all'interno di un database non strutturato:
+\begin{itemize}
+    \item \textit{input}: un circuito booleano (non accessibile) che computa una funzione sconosciuta: $f:\{0,1\}^n\to\{0,1\}$ t.c. $\exists a\in \{0,1\}^n$ con $f(x) = 1 \iff x=a$
+    \item \textit{output}: l'\textbf{unica} stringa $a\in \{0,1\}^n | f(a) = 1$
+\end{itemize}
+
+Vogliamo appunto cercare la \textit{s} invocando \textit{f}. 
+In modo classico, per eseguire questa verifica, servono $2^n$ iterazioni (ovvero lo dobbiamo calcolare per ogni coordinata).
+
+L'algoritmo di Grover, usando una tecnica che si chiama \textbf{amplitude amplification} riesce a risolvere il problema in tempo $O(\sqrt{2^n})$. Non cambiamo di classe di complessità, ma comunque rappresenta un buon guadagno.
+
+Vediamo la soluzione andando ad analizzare le varie componenti utilizzate in modo separato:
+\begin{itemize}
+    \item \textbf{Primo componente}: classico per mettere in superposizione (massima) senza entanglement (tra $H(\vect{1})$ e il resto non c'é entanglement.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/grover-circuit-1.png}
+\end{figure}
+\item \textbf{Secondo componente}:
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/grover-circuit-2.png}
+\end{figure}
+
+
+
+\begin{align*}
+    U_f\left( \vect{x}\otimes H(\vect{1}) \right) =& U_f \left( \frsq \vect{x} \otimes \vect{0} - \frsq \vect{x} \otimes \vect{1} \right) = \\
+    =& \frsq U_f \left( \frsq \vect{x} \otimes \vect{0}\right) - \frsq U_f \left( \frsq \vect{x} \otimes \vect{1}\right)= \footnote{Per definizione di \textit{f}. Il not esce da $1\otimes f(x)$ che equivale a negarlo.}
+    \\=& \frsq \vect{x}\otimes \vect{f(x)} - \frsq \vect{x} \vect{\neg f(x)} =\\=&
+    (-1)^{f(x)} \vect{x} \otimes \left( \frsq\vect{0}-\frsq\vect{1} \right) 
+    =\\=&  (-1)^{f(x)} \vect{x} \otimes H(\vect{1})
+\end{align*}
+
+Nel caso in cui $x=a, f(x) = 1$ e quindi avviene la negazione di tutta l'amplitude. Sfrutteremo questo nel terzo componente (altrimenti é inutile)
+
+\item \textbf{Terzo componente}: cerchiamo di amplificare l'amplitude del componente \textit{a}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/grover-circuit-3.png}
+\end{figure}
+
+Analizziamo il componente interno. Partiamo da quel simbolo nuovo. 
+A partire da uno stato (VETTORE) $\mu$, si può \textbf{formare un OPERATORE} $\langle \mu |$. Avremo quindi che
+$$\langle \mu |(\vect{\theta}) = \langle \mu|\theta\rangle$$
+é semplicemente una notazione che supporta l'associativitá, in modo da poter formare espressioni combinando ket e bra, in particolare possiamo comporre questi operatori.
+
+Quello che succede ora utilizzando le due Hadamard, é che la prima fluisce nel $\vect{0}$, la seconda nel $\langle 0|$
+
+$$H^{\otimes n} \circ 2\vect{0}\langle 0| - I^{\otimes n} \circ H^{\otimes n} = 2\vect{\phi} \langle \phi | - I^{\otimes n}$$
+In questo modo dimostriamo come tutto sia fatto da gate elementary.
+
+\end{itemize}
+
+\paragraph{Analisi Geometrica}
+Vediamo come operano questi operatori sugli stati $\vect{a}$ e $\vect{\phi}$:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/grover-geom-analysis-1.png}
+\end{figure}
+
+In tutti i 4 casi otteniamo una combinazione lineare dei 2 vettori. 
+Possiamo vedere quindi come una combinazione lineare del sottospazio generato dai due vettori.
+Vediamo perché queste 4 espressioni valgono:
+
+\begin{align*}
+    V\vect{a}=& (-1)^{f(a)} \vect{a}= -1 \vect{a}= - \vect{a} \\
+    V\vect{\phi}=& V\left( \frac{1}{2^{\frac{n}{2}}} \sum_{x\in \{0,1\}^n} \vect{x}\right)= \frac{1}{2^{\frac{n}{2}}} \sum_{x\in \{0,1\}^n} V(\vect{x})=\frac{1}{2^{\frac{n}{2}}}\sum_{x\in \{0,1\}^n} (-1)^{f(x)} \vect{x} =\\=& \frac{1}{2^{\frac{n}{2}}}\left(\sum_{x\in \{0,1\}^n \setminus \{a\}} (-1)^{f(x)} \vect{x} -\vect{a}\right) =  
+    \frac{1}{2^{\frac{n}{2}}}\left(\sum_{x\in \{0,1\}^n} \vect{x} - 2\vect{a}\right)
+    =\\=& \vect{\phi}-\frac{2}{2^{\frac{n}{2}}}\vect{a}
+    \\
+    W\vect{a} =& 2\vect{\phi} \langle \phi | - 1 \vect{a} = 2\vect{\phi}\langle \phi|a\rangle - \vect{a} =  2\vect{\phi}\langle \frac{1}{2^{\frac{n}{2}}} \sum \vect{x}|a\rangle - \vect{a} =\\=& 2\vect{\phi}\frac{1}{2^{\frac{n}{2}}} \sum \langle x|a\rangle - \vect{a} =\footnote{$\langle x|a\rangle = 1 \iff x = a$, negli altri casi è 0.}
+    2\vect{\phi}\frac{1}{2^{\frac{n}{2}}} [0+...+0+1+0...+0] - \vect{a}
+    =\\=&2\cdot \frac{1}{2^{\frac{n}{2}}}\vect{\phi} - \vect{a} = \frac{2}{2^{\frac{n}{2}}}\vect{\phi}-\vect{a}
+    \\
+    W\vect{\phi} =& \left(2\vect{\phi} \langle \phi | - 1  \right) \phi = 2\vect{\phi}\langle \phi|\phi\rangle - \vect{\phi} = 2\vect{\phi} -\vect{\phi} = \vect{\phi}
+\end{align*}
+
+Quindi quello che succede é che applicando $\mathbf{V}$ e $\mathbf{W}$, lo stato \textbf{rimane} nella forma $\vect{\psi}\otimes H(\vect{1})$, dove $\vect{\psi}$ vive in uno spazio bidimensionale di tutte le combinazioni lineari $\alpha\vect{\phi}+\beta\vect{a}$, con $\alpha, \beta \in \mathbb{R} $ e $\alpha^2 + \beta^2 = 1$.
+
+Gli stati $\vect{a}$ e $\vect{\phi}$ sono quasi ortogonali, in quanto l'inner product é molto piccolo: $\theta = \langle a|\phi \rangle = 2^{-\frac{n}{2}}$.
+C'è quindi un vettore che forma un piccolo angolo con $\vect{\phi}$ che é ortogonale con $\vect{a}$. 
+Chiamiamo questo vettore $\vect{a^\bot}$
+
+Quindi $\mathbf{V}$ e $\mathbf{W}$ sono reflections, e il loro prodotto $\mathbf{W}\mathbf{V}$ è una \textbf{rotazione}.
+
+ \begin{figure}[h!]
+     \centering
+     \includegraphics[width=0.4\linewidth]{images/grover-geom-analysis-2.png}
+     \caption{Analisi Geometrica. Leggere a partire da $\vect{\phi}$}
+ \end{figure}
+
+ Partendo da $\vect{\phi}$, applicando $\mathbf{V}$ otteniamo la reflection su $\vect{a^\bot}$. A questo punto, se applichiamo $\mathbf{W}$($WV(\vect{\phi})$) otteniamo una reflection su $\vect{\phi}$
+
+ Continuando questo procedimento di rotazione, se lo applichiamo diverse volte arriveremo quindi vicini ad $\vect{a}$.
+ A questo punto possiamo misurare.
+
+ \paragraph{Circuit}La parte centrale praticamente é un loop, è eseguita quel numero di volte.
+
+ \begin{figure}[h!]
+     \centering
+     \includegraphics[width=0.6\linewidth]{images/grover-circuit-4.png}
+ \end{figure}
+
+\newpage
+\section{Protocolli quantistici}
+Fino ad adesso abbiamo lavorato con i circuiti quantistici:
+\begin{itemize}
+    \item sequenze di operazioni unitarie applicate a qubits in una maniera ben precisa.
+    \item eseguiti da hardware quantico o simulati da hardware classico.
+    \item modo per computare funzioni da $\{0,1\}^n$ a $\{0,1\}^m$
+\end{itemize}
+
+Vediamo ora cosa sono i \textbf{Quantum Protocols}.
+\begin{itemize}
+    \item protocolli di comunicazioni, ovvero una sequenza di computazioni e steps di comunicazioni eseguita da un insieme di agenti (possibilmente distribuiti).
+    \item gli agenti possono non solo scambiarsi dati classici, ma anche qubits (possono anche non scambiarsi nulla, ma abbiamo la potenza dell'\textbf{entanglement}).     
+\end{itemize}
+
+Definiamo ora formalmente cos'è un protocollo quantico.
+Non esiste un modello formale unico, quindi probabilmente per ora non ha senso introdurne uno. 
+Ci sono attualmente \textit{molti} linguaggi e modelli di protocolli quantici, quindi rimaniamo informali.
+
+Descriveremo il circuito e chi possiede i qubit all'interno del circuito (e come sono interscambiati), oppure descriveremo cosa deve fare ciascun agente con i propri dati.
+
+\subsection{Quantum Teleportation}
+Supponiamo che Alice ha un qubit che non puó misurare, e vuole "mandarlo" a Bob.
+
+Vogliamo farlo senza mandare \textit{fisicamente} il qubit, ovvero può comunicare in modo classico con Bob ma non può mandare dati quantistici a Bob.
+
+Questo risultato può essere raggiunto, con l'unica condizione che Alice e Bob condividono un paio di qubit entangled $\vect{\psi}$.
+Questo paio di qubit \textit{deve} esserci da prima dell'inizio del protocollo, ovvero prima che Alice decida di mandare il qubit ad Bob.
+Tuttavia, avviene la \textbf{distruzione} dei qubit entangled e di quello da comunicare (perdiamo risorse).
+
+Il circuito che rappresenta la Quantum Teleportation é:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/quantum-teleportation.png}
+\end{figure}
+
+Il qubit $\vect{\phi}$ è quello che Alice vuole inviare a Bob, m entre $\vect{\psi}$ é la coppia di qubit entangled.
+La storia di $\vect{\phi}$ é completamente asincrona rispetto a $\vect{\psi}$.
+
+Il risultato delle due misurazioni distrugge l'entanglement e produce 2 bit classici (inviati a Bob in modo classico).
+Bob in questo modo ottiene $\vect{\phi}$
+
+Vediamo la correttezza:
+\newpage
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/quantum-teleportation-correctness.jpeg}
+\end{figure}
+
+\subsection{Quantum Pseudotelepathy}
+La \textbf{Quantum Pseudotelepathy} fa riferimento ai protocolli che sfruttano l'entanglement per dimostrare che (almeno una parte del)la comunicazione tra le diverse parti puó essere \textbf{evitata}. 
+Ovviamente questo é impossibile nella computazione classica.
+
+Vediamo quindi un piccolo esempio attraverso un gioco (\textbf{GHZ}, dagli studiosi).
+
+\paragraph{GHZ game}
+Supponiamo di avere tre giocatori: Alice, Bob e Charlie.
+C'é un arbitro che effettua a ciascun giocatore una domanda (rispettivamente $x,y,z$, dove ognuno é $ \in \{\blacksquare, \square\}$\footnote{questa domanda vedilo ad esempio come un assegnamento, quindi puó essere 1 o 0. Per renderlo piú comprensibile, possiamo considerare delle stanze in cui sono i tre giocatori, e ad un giocatore viene assegnato "colore" (rispettivamente 1), mentre agli altri due ad esempio viene assegnato "forma" (rispettivamente 0). È un assegnamento booleano. A loro volta, i giocatori possono rispondere solamente con 1 o 0 (ad esempio, per chi avrá il colore, puó rispondere solo blu o rosso).}), alla quale il singolo giocatore puó rispondere solo con $0$ o $1$. 
+Ovviamente i 3 giocatori, una volta ricevuta la domanda, non possono comunicare tra loro.
+Chiamiamo le 3 risposte rispettivamente $a,b,c$.
+
+I giocatori \textbf{vincono} solo se lo XOR ($a \oplus b\oplus c$) delle loro \textbf{risposte} segue questa tabella:
+
+\begin{center} % Centra la tabella nella pagina
+\begin{tabular}{|c||c|}
+\hline
+\textbf{\textit{x,y,z}} & \textbf{Requisito per le Risposte $a \oplus b \oplus c$} \\
+\hline \hline
+( $\blacksquare, \blacksquare, \blacksquare$ ) & 1 \\
+\hline
+( $\blacksquare, \square, \square$ ) & 0 \\
+\hline
+($ \square, \blacksquare, \square$ ) & 0 \\
+\hline
+($ \square, \square, \blacksquare$ ) & 0 \\
+\hline
+
+\end{tabular}
+\end{center}
+
+
+% I giocatori \textbf{vincono} solo se lo XOR ($a \oplus b\oplus c$) delle loro \textbf{risposte} segue queste regole:
+% \begin{enumerate}
+%     \item Se il numero di domande 1 (assegnamenti 1 dell'arbitro) è \textbf{pari}, allora la somma delle risposte deve essere \textbf{pari}:
+%     $$
+%     (x,y,z)\in \{(0,0,0), (0,1,1), (1,0,1), (1,1,0)\} \implies a\oplus b\oplus c=0
+%     $$
+%     \item Se il numero di domande 1 (assegnamenti 1 dell'arbitro) è \textbf{dispari}, allora la somma delle risposte deve essere \textbf{dispari}:
+%     $$
+%     (x,y,z)\in \{(0,0,1), (0,1,0), (1,0,0), (1,1,1)\} \implies a\oplus b\oplus c=1
+%     $$
+% \end{enumerate}
+
+Utilizzando una strategia classica (pre accordata), é impossibile vincere sempre. Si puó dimostrare che utilizzando una strategia classica non si potranno mai soddisfare tutte le condizioni di vittoria, ottenendo al massimo una percentuale di vittorie dell'\textbf{75\%}.
+
+Vediamo ora come, attraverso una strategia quantistica, si riesca a vincere al 100\%.
+I 3 giocatori devono condividere uno stato comune \textbf{entangled}, chiamato \textit{GHZ State}:
+$$
+\vect{GHZ} = \frsq \vect{000} + \frsq \vect{111}
+$$
+
+Ogni giocatore utilizza questa strategia (andando ad applicare queste regola al \textbf{suo} bit: Alice il primo, Bob il secondo, Charlie il terzo). Vediamo quindi il caso di Alice:
+\begin{itemize}
+    \item Se Alice riceve un $\blacksquare$, ovvero un 1, quello che fa é:
+    \begin{align*}
+        \vect{1yz}\to& \frsq \vect{1yz} + \frsq \vect{0yz}
+        \\
+        \vect{0yz}\to& \frsq \vect{1yz} - \frsq \vect{0yz}
+    \end{align*}
+    \item Se Alice riceve un $\square$, ovvero un 0, allora \textbf{non fa nulla}.
+\end{itemize}
+
+Vediamo ora un esempio. 
+Supponiamo che Alice riceva un $\blacksquare$. Quello che succede é quindi:
+\begin{align*}
+    \frsq \vect{000} + \frsq \vect{111} &\to \frsq \left( \frsq \vect{100} - \frsq \vect{000} + \frsq \vect{111} + \frsq \vect{011} \right) =\\&\to \frac{1}{2}\left(  \vect{100} - \vect{000} + \vect{111} + \vect{011} \right)
+\end{align*}
+
+Supponiamo che anche a Bob e Charlie arriva un $\blacksquare$:
+\begin{align*}
+    &\frac{1}{2}\left( \vect{100} - \vect{000} + \vect{111} + \vect{011} \right) \stackrel{Bob}{\to}\\&
+    \frac{1}{2}\left( \left( \frsq \vect{110} - \frsq \vect{100} \right) - \left(  \frsq \vect{010} - \frsq \vect{000} \right) + \left(  \frsq \vect{111} + \frsq \vect{101} \right) + \left(  \frsq \vect{011} - \frsq \vect{001} \right) \right) = \\&= \frac{1}{2\sqrt{2}} \left( \vect{000} - \vect{001} - \vect{010} + \vect{011} - \vect{100} + \vect{101} + \vect{110} + \vect{111} \right)\stackrel{Charlie}{\to}\\&...\\&=\frac{1}{2}\left( \vect{001} + \vect{010} + \vect{100} +\vect{111} \right) 
+\end{align*}
+
+Ora, a partire da questo stato, quando i giocatori misureranno otterranno sempre un risultato dispari, ovvero 1. Quindi si trova.  
+
+\subsection{Quantum Key Distribution}
+Possiamo sfruttare le proprietà del Quantum Computing per effettuare \textbf{Criptazione simmetrica}. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/symmetric-enc.png}
+\end{figure}
+
+Come vediamo nello schema, la chiave utilizzata nel Enc e nel Dec é la stessa: \textit{k}.
+
+Si possono costruire schemi di encryption simmetrica che sono sicuri ed efficienti. 
+Tuttavia c'é un problema: come possono il sender e il receiver \textbf{condividersi} la chiave simmetrica \textit{k} prima della comunicazione?
+
+Alcune soluzioni sono:
+\begin{itemize}
+    \item utilizzo di un canale giá \textbf{sicuro}.
+    \item utilizzo degli schemi a chiave pubblica-privata per condividere la chiave, e poi passare a encryption simmetrico.
+    \item sfruttando il \textbf{quantum computing}.
+\end{itemize}
+
+Focalizziamoci su quest'ultimo caso.
+
+Tradizionalmente, i canali di comunicazioni si assumono classici, ovvero i dati che fluiscono sul canale possono essere \textbf{osservati} senza essere alterati, e il cui valore puó essere \textbf{duplicato}.
+
+In pratica, se parliamo di quantum, osservare dei dati diventa un \textbf{quantum measurement} (che ricordiamo fa collassare il sistema), mentre la duplicazione non é possibile a causa del \textbf{No-cloning Theorem}.
+Possiamo sfruttare in qualche modo queste due caratteristiche?
+
+Lavoriamo con due basi ortonormali\footnote{Ortonormali = Ortogonali (vettori della base perpendicolari tra loro - inner product o prodotto scalare = 0) + Normali (norma = 1) }:
+\begin{align*}
+        \vect{\to} = \vect{0}\;&\quad\;\vect{\uparrow}=\vect{1}
+\\
+    \vect{\nwarrow} = -\frsq\vect{0}+\frsq\vect{1}
+    \;&\quad\;
+    \vect{\nearrow}= \frsq\vect{0}+\frsq\vect{1}    
+\end{align*}
+
+Le due basi sono quindi:
+$$
+\mathbf{P} = \{\vect{\to},\vect{\uparrow}\}
+\;\quad\;
+\mathbf{T} = \{\vect{\nwarrow},\vect{\nearrow}\}
+$$
+
+Queste basi ci sono utili perché:
+\begin{itemize}
+    \item Se si prepara uno stato sulla base $\mathbf{P}$ e lo misuriamo rispettivamente a $\mathbf{T}$ otteniamo un risultato casuale (tra $\vect{\nwarrow}$ e $\vect{\nearrow}$ con prob =$\frac{1}{2}$)
+    \item Se si prepara uno stato sulla base $\mathbf{T}$ e lo misuriamo rispettivamente a $\mathbf{P}$ otteniamo un risultato casuale (tra $\vect{\uparrow}$ e $\vect{\to}$ con prob =$\frac{1}{2}$)
+\end{itemize}
+
+Il \textbf{protocollo BB84} quindi sfrutta queste due basi per capire se qualcuno ha ascoltato durante la comunicazione. 
+
+Quello che succede é:
+\begin{enumerate}
+    \item Alice vuole inviare una serie di bit casuali (ovvero la \textbf{chiave}) a Bob. La prima cosa che fa è scegliere a caso una delle due basi (\textbf{P o T}) per codificarlo in un qubit.
+    Invia quindi sul canale i Bit codificati
+    \item Bob si ritrova a non sapere che scelta ha fatto Alice riguardo la sequenza di \textbf{P e T}.
+    Effettua quindi una scelta casuale per ogni qubit che gli arriva. A questo punto abbiamo due possibili risultati (50\%): Bob ha scelto la stessa base di Alice e quindi ottiene il bit corretto; oppure Bob ha scelto la base sbagliata. In questo caso misura 1 o 0 casualmente.
+    \item A questo punto la stringa di bit di Bob é differente da quella di Alice, dunque non puó usarla come chiave segreta. 
+    Sono corretti all'incirca il 50\% dei bit ricevuti.
+    Avviene dunque il \textbf{sifting}, ovvero Bob e Alice si comunicano in un canale \textbf{non sicuro} la lista delle basi utilizzate (T o P). 
+    Partono dunque dalla sequenza di bit che entrambi hanno e \textbf{tengono} soltanto i bit che hanno misurato con la stessa base. 
+    In questo modo ritrovano la stessa sequenza di bit e hanno dunque la loro chiave.
+\end{enumerate}
+
+Perché é sicuro? 
+La condivisione della lista delle basi utilizzate é pubblica e non sicura, quindi Eve potrebbe ascoltarla.
+Tuttavia, non ci puó fare niente perché questa é una fase \textbf{successiva} alla comunicazione dei qubit, e dunque non ha piú accesso ai qubit originali per ricostruirsi la chiave. 
+
+Eve potrebbe ascoltare la prima comunicazione, quella dei qubit ma anche lei si trova nello stesso dilemma di Bob, ovvero deve scegliere casualmente una base. Facendo questo, va a modificare lo stato dei qubit nel caso di base scelta sbagliata. Questo stato errato poi verrá comunicato a Bob che potrá accorgersi di questo cambiamento una volta condivisa la lista di scelte con Alice. 
+
+Al massimo, Eve potrá avere \textbf{porzione} della chiave, e Alice e Bob possono accorgersi della sua presenza.
+
+\subsection{Quantum Commitment}
+Un \textbf{commitment protocol} permette a due parti (Alice e Bob) di interagire in modo che Alice possa impegnarsi(commit) su un valore scelto, garantendo che:
+\begin{itemize}
+    \item Il valore scelto da Alice rimane \textit{nascosto} fino a quando Alice decide di rivelarlo.
+    \item Né Alice né Bob possono \textit{cambiare} il valore scelto da Alice, ovvero il protocollo é vincolante (\textbf{binding}).
+\end{itemize}
+
+Nella crittografia classica, esistono varie forme di commitment protocols che si basano su assunzioni crittografiche, come l'esistenze delle one-way functions.
+
+Nel quantum computing, a causa del fatto che l'osservazione puó potenzialmente alterare il valore del dato, sembra un approccio promettente.
+
+\paragraph{Quantum Bit Commitment}
+
+Supponiamo che Alice e Bob vogliano su un singolo bit, scelto da Alice.
+
+Alice quindi sceglie il valore \textit{b}.
+Genera poi \textit{n} bit casuali, ottenendo dei valori $v_1, ...,v_n \in \{0,1\}$(la password per codificare il bit) e prepara \textit{n} qubits $\vect{x_1}, ..., \vect{x_n}$ in questo modo:
+\begin{align*}
+    b=0 \implies \vect{x_i} \text{ settato a } \vect{v_i}\\
+    b=1 \implies \vect{x_i} \text{ settato a } H(\vect{v_i})
+\end{align*}
+
+A questo punto Alice invia a Bob $\vect{x_1}, ..., \vect{x_n}$, che li mantiene in un posto segreto.
+
+Quando arriverà il momento in cui Alice vuole \textbf{rivelare} il valore di \textit{b}, dirá non solo \textit{b}, ma anche i valori $v_1,...,v_n$. In questo modo Bob può verificare se Alice lo sta ingannando semplicemente misurando $\vect{x_1}, ..., \vect{x_n}$ (basandosi sulla base P o T in base al bit \textit{b} inviatogli).
+
+Analizziamo ora la sicurezza di questo metodo.
+
+Si puó dimostrare che Bob non può estrarre \textbf{nessuna informazione} riguardo \textit{b} a partire dall'insieme di qubits inviati da Alice. ($v_1,...v_n$ sono completamente randomici e Bob non li conosce nella prima fase).
+
+Si puó dimostrare tuttavia che il protocollo cosí \textbf{non é sicuro}:
+\begin{itemize}
+    \item Invece di preparare $\vect{x_1}, ... , \vect{x_n}$, Alice puó preparare \textit{n} coppie di qubits entangles (Bell state) e mandare \textit{il primo} qubit di ogni coppia a Bob.
+    \item Bob ovviamnete non sa che i qubits ricevuti sono entangled
+    \item Al momento della rivelazione, Alice puó \textbf{cambiare il valore} di \textit{b} a suo piacimento applicando un \textit{H} sui propri qubit.
+    Ovviamente, la misurazione va ad influenzare i qubit posseduti da Bob per l'effetto dell'entanglement, quindi non si accorgerá di nulla.
+\end{itemize}
+Nota: come provato da Mayers, il quantum bit committment sicuro senza condizioni \textit{é impossibile}.
+
+Vediamo un piccolo esempio.
+Per semplicità, supponiamo $n=1$.
+
+Se Bob misura un qubit che é o $\vect{\phi}$ o $\vect{\psi}$ dove $\vect{\phi}$ e $\vect{\psi}$ sono stati \textbf{ortogonali} $\langle\psi|\phi \rangle = 0$, allora la probabilità di osservare 0 é:
+$$
+p(0) = \frac{1}{2} \left| \langle 0|\phi \rangle \right|^2 + \frac{1}{2}\left| \langle 0|\psi\rangle \right|^2
+$$
+
+Data una base ortonormale, possiamo definire qualsiasi qubit in quella base. Ovvero, possiamo esprimere $\vect{0}$ nella base ortogonale $\{\vect{\phi},\vect{\psi}\}$:
+$$
+\vect{0} = \vect{\phi}\langle \vect{\phi|0} \rangle + \vect{\psi}\langle \vect{\psi|0} \rangle
+$$
+Possiamo quindi concludere che:
+$$
+|\langle 0|\phi \rangle|^2 + |\langle 0|\psi \rangle|^2 = 1 \implies p(0) = \frac{1}{2}
+$$
+
+\section{Error correction}
+Ci possono essere errori anche nella computazione classica. La materia che si occupa di questo é l'\textbf{Information Theory}. 
+Tuttavia, è una materia ora poco studiata dagli informatici, che cercano di astrarre sempre di piú, e lasciata piú agli ingegneri o chi si occupa della parte "fisica".
+Inoltre, i \textit{gates} logici alla base della computazione classica effettuano degli errori con probabilità cosí remota che puó essere considerata 0.
+Diverso è il caso della \textit{comunicazione} a distanza, in cui gli errori sono ancora presenti (infatti é ancora studiato il livello Fisico in un esame di reti).
+
+L'information theory quindi cerca anche delle strategie per \textbf{correggere} gli errori. 
+Ad esempio, l'uso \textbf{repetition code}, in cui prendiamo un bit che deve essere inviato e lo replichiamo n volte. 
+Usando $n=3$ ($0\to 000, 1\to 111$), l'errore può essere riconosciuto e corretto.\footnote{Vista la probabilità comunque bassa di errori, di solito su 3 bit al massimo 1 sarà sbagliato, e dunque possiamo riconoscerlo e correggerlo.}
+
+In \textbf{Quantum Computation} abbiamo numerosi altri errori. 
+Non ci sono errori soltanto nella comunicazione, ma qui sono presenti molti anche nella \textbf{computazione}.
+\begin{itemize}
+    \item qubits sono implementati a livello atomico! 
+    Il disturbo causato dall'ambiente è fondamentale e può variare lo stato del sistema
+    \item \textbf{Rilevare} un errore é impossibile, in quanto dovremmo misurare il qubit e questo porta al collasso del sistema. Dobbiamo quindi usare una strategia differente (senza guardare il valore direttamente).
+    \item Se dal lato classico un errore può essere modellato come un \textbf{random bit flip} a causa di un problema sistema fisico, nel \textit{quantum} ovviamente non abbiamo solo 0 e 1, quindi abbiamo un \textit{\textbf{errore di fase}}. Questi ultimi sono invisibili, in quanto hanno anche la stessa distribuzione dell'output nel momento della computazione.
+\end{itemize}
+
+$$
+\frsq \vect{0}+\frsq\vect{1} \stackrel{\text{Phase error}}{\rightsquigarrow} \frsq\vect{0}-\frsq\vect{1}
+$$
+
+$$
+\frsq \vect{0}-\frsq\vect{1} \stackrel{\text{Bit flipping}}{\rightsquigarrow} \frsq\vect{1}-\frsq\vect{0}
+$$
+
+Nonostante tutti questi problemi, la quantum error connection esiste. 
+
+\subsection{QECCs}
+Vediamo ora i\textbf{ Quantum Error Connecting Codes }(QECCs)
+Per vedere come funziona, usiamo un setting semplificato.
+
+
+\paragraph{Quantum Repetition Code}
+Partiamo dal provare a ricreare quello che é il repetition code, quindi cerchiamo di fare un Quantum Repetition Code. 
+In questo caso, siamo interessati a risolvere i \textbf{singoli qubit flipping} errors.
+
+In altre parole, siamo in questo stato:
+
+\[
+\Qcircuit @C=1.2em @R=0.8em {
+    \lstick{\alpha|0\rangle + \beta|1\rangle} & \ctrl{1} & \ctrl{2} & \gate{X?} & \qw \\
+    \lstick{|0\rangle}                       & \targ    & \qw      & \gate{X?} & \qw \\
+    \lstick{|0\rangle}                       & \qw      & \targ    & \gate{X?} & \qw
+}
+\]
+
+Abbiamo quindi uno stato arbitario ($\alpha \vect{0} +\beta\vect{1}$) e vogliamo cercare di "replicare" quello stato, ovviamente abbiamo la limitazione del no cloning theorem.
+Prima dei random gate \textit{X} (che rappresentano il bit flipping, qunidi la possibilitá di errore), ci troviamo in questo stato:
+$$
+\alpha\vect{000} + \beta\vect{111}
+$$
+Questo infatti \textbf{non é clonare}. Il cloning sarebbe questo (impossibile):
+$$
+(\alpha\vect{0}+\beta\vect{1})\otimes \vect{0}\otimes \vect{0} \mapsto (\alpha\vect{0}+\beta\vect{1})\otimes (\alpha\vect{0}+\beta\vect{1})\otimes (\alpha\vect{0}+\beta\vect{1})
+$$
+
+Quello che stiamo facendo é soltanto replicare la base senza i coefficienti.
+
+Come possiamo quindi, a partire da questo, fare la \textbf{detection} e la \textbf{correction}?
+
+Vediamo il circuito piú semplice di QECC:
+
+
+Quello che facciamo é cercare di capire cosa sta succedendo attraverso le cnot. I valori dei due qubit ancillari, una volta misurati, sono poi usati per effettuare una \textit{X} che vada a correggere quindi l'errore.
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{images/qecc-example.jpeg}
+\end{figure}
+
+Vediamo ora il caso generale degli errori (anche considerando quelli che sono gli errori di fase).
+Come l'ambiente interagisce sul qubit?
+
+\paragraph{General Error Model}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/general-error-model.png}
+\end{figure}
+
+Non conosciamo molto dell'ambiente.
+Sappiamo che si tratta comunque di un sistema quantistico.
+
+Gli \textbf{errori} e il \textbf{rumore} é dunque un'interazione tra sistema e ambiente. 
+Possiamo quindi vederlo come una forma di trasformazione lineare (non per forza unitaria):
+
+$$
+\vect{\Psi}\vect{E}\mapsto \vect{\Theta}
+$$
+
+Possiamo quindi scrivere questa trasformazione usando la forma generale:
+\begin{align*}
+    \vect{0}\vect{E}\mapsto \beta_1\vect{0}\vect{E_1}+ \beta_2\vect{1}\vect{E_2}
+    \\
+    \vect{1}\vect{E}\mapsto \beta_3\vect{1}\vect{E_3}+ \beta_4\vect{1}\vect{E_4}
+\end{align*}
+
+Non sappiamo cosa siano $\beta_i$ e $E_i$.
+Dovremmo quindi, a partire da questa situazione, trovare e correggere gli errori, che sembra alquanto difficile.
+
+Ovviamente contano anche le amplitudini del sistema, quindi altri due fattori ($\alpha_0, \alpha_1$) che influenzano il tutto (considera le superposizioni ad esempio):
+
+\begin{align*}
+    (\alpha_0\vect{0}+\alpha_1\vect{1})\vect{E} \mapsto \alpha_0\beta_1\vect{0}\vect{E_1}+\alpha_0\beta_2\vect{1}\vect{E_2} +
+    \alpha_1\beta_3\vect{1}\vect{E_3}+ \alpha_1\beta_4\vect{1}\vect{E_4}
+\end{align*}
+
+Attraverso l'uso dell'algebra, possiamo semplificare il tutto:
+    \begin{align*}
+    \alpha_0\beta_1\vect{0}\vect{E_1}+\alpha_0\beta_2\vect{1}\vect{E_2} +
+    \alpha_1\beta_3\vect{1}\vect{E_3}+ \alpha_1\beta_4\vect{1}\vect{E_4} =\\&
+    \frac{1}{2} (\alpha_0\vect{0}+\alpha_1\vect{1})(\beta_1\vect{E_1} +\beta_3\vect{E_3}) + \\&
+    \frac{1}{2} (\alpha_0\vect{0}-\alpha_1\vect{1})(\beta_1\vect{E_1} -\beta_3\vect{E_3}) + \\&
+    \frac{1}{2} (\alpha_0\vect{1}+\alpha_1\vect{0})(\beta_2\vect{E_1} +\beta_4\vect{E_4}) + \\&
+    \frac{1}{2} (\alpha_0\vect{1} - \alpha_1\vect{0})(\beta_2\vect{E_2} -\beta_4\vect{E_4})
+\end{align*}
+
+
+Dividiamo la parte del sistema da quella ambientale.
+In questo modo, vediamo che sul lato a sinistra (del sistema) non compare nessun $\beta$, quindi l'errore non dipende dalla parte di $\beta$.
+
+Supponiamo di avere $\vect{\Psi} = \alpha \vect{0} +\alpha_1\vect{1}$, allora possiamo scrivere le quattro forme a sinistra (quelle che riguardano il sistema) in questo modo:
+\begin{align*}
+     \alpha_0 \vect{0} +\alpha_1\vect{1}  =& I\vect{\Psi}\\
+     \alpha_0 \vect{0} -\alpha_1\vect{1}  =& Z\vect{\Psi}\\
+     \alpha_0 \vect{1} + \alpha_1\vect{0}  =& X\vect{\Psi}\\
+     \alpha_0 \vect{1} - \alpha_1\vect{0}  =& XZ\vect{\Psi}
+\end{align*}
+
+Nota: Tutte le trasformazioni lineari possono essere viste come una combinazione lineare sulla base $\{X,Z,I\}$.
+
+Come abbiamo visto, l'esempio di prima del bit flipping é il terzo caso, ovvero la \textit{X}.
+
+Possiamo quindi ora scrivere l'\textbf{effetto} degli errori(noise, bit flipping, qualsiasi) usando i gate appena scritti:
+
+\begin{align*}
+    \vect{\Psi}\vect{E} \mapsto &
+    \frac{1}{2} \vect{\Psi}(\beta_1\vect{E_1} +\beta_3\vect{E_3}) + \\&
+    \frac{1}{2} (Z\vect{\Psi})(\beta_1\vect{E_1} -\beta_3\vect{E_3}) + \\&
+    \frac{1}{2} (X\vect{\Psi})(\beta_2\vect{E_1} +\beta_4\vect{E_4}) + \\&
+    \frac{1}{2} (XZ\vect{\Psi})(\beta_2\vect{E_2} -\beta_4\vect{E_4})
+\end{align*}
+
+Il caso degli errori di \textbf{bit flip} puó essere visto come un \textbf{caso specifico} del general error model, ovvero quello in cui:
+$$
+\beta_1\vect{E_1} =\beta_3\vect{E_3}\quad\quad\beta_2\vect{E_2} =\beta_2\vect{E_2}
+$$
+In questo modo cancelliamo i termini dei casi di $Z$ e $XZ$. Ovviamente la probabilitá che un errori di bit flip (\textit{X-error}) non é per forza 50\%, ma dipende dagli altri coefficienti ($\beta_i$) e dagli stati $\vect{E_i}$.
+
+Abbiamo quindi visto il caso di un solo qubit.
+
+Tutto questo puó essere generalizzato a sistemi con più di un qubit. 
+Tuttavia, richiede matrici di densità, superoperatori e altro. Dunque non lo vediamo.
+
+Però, la definizione di quello che un QECC dovrebbe fare è semplice:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/general-qecc.png}
+\end{figure}
+\newpage
+
+Per quanto riguarda invece gli errori di \textbf{phase-flip} errors (SOLO phase flip, non combinazione), possono essere scritti in questo modo:
+$$
+\vect{\Psi}\vect{E}\mapsto \frac{1}{2} \vect{\Psi}(\beta_1\vect{E_1} +\beta_3\vect{E_3}) + \frac{1}{2} (Z\vect{\Psi})(\beta_1\vect{E_1} -\beta_3\vect{E_3})
+$$
+
+Possiamo trasformare l'errore di fase in un errore di bit flip \textbf{facilmente}. 
+Un errore di fase puó essere visto semplicemente come un bit flip error sulla base Hadamard.
+
+\begin{align*}
+    \vect{+}=& \frsq (\vect{0}+\vect{1})\\
+    \vect{-}=& \frsq (\vect{0}-\vect{1})
+\end{align*}
+
+L'effetto di \textit{Z} è trasformare $\vect{+}$ in $\vect{-}$ e viceversa.
+
+Quindi tutto si puó ridurre ad un problema di encoding:
+\begin{align*}
+    \vect{0}\mapsto& \vect{+}\vect{+}\vect{+}\\
+    \vect{1}\mapsto& \vect{-}\vect{-}\vect{-}
+\end{align*}
+
+
+\section{Quantum programming Languages}
+Nei sistemi classici, la struttura é la seguente:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\linewidth]{images/classical-stack-languages.png}
+\end{figure}
+
+I primi due livelli, linguaggi intermedi(JVM,...) e alto livello (C,JAVA, Python, ...), sono ovviamente indipendenti dalla macchina, c'é astrazione. 
+Questo ovviamente ha portato alla creazione di diversi paradigmi di programmazione:logico, imperativo, funzionale, ...
+
+Dal livello assembly, invece tutto é \textbf{architecture-dependent}.
+
+L'approccio main stream ovviamente é la creazione di layer che nascondono le implementazioni.
+
+Vediamo ora il \textbf{quantum}.
+Non esiste uno stack come quello che usiamo nella computazione classica.
+In ogni caso, ci servono entrambe le parti della computazione, sia la parte classica sia quella quantica. 
+Ovvero, servirebbe un paradigma che permetta di usare i diversi circuiti, classici e quantici. 
+Questo ovviamente con un certo livello di astrazione (ad esempio dobbiamo essere noi programmatori a decidere quale circuito o un middleware che lo gestisce?)
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/quantum-stack-languages.png}
+\end{figure}
+
+Una delle idee é stato il \textbf{modello QRAM}. 
+Cercava di replicare una variazione dell'architettura di Von-neumann.
+
+L'idea principale é che ci sono due parti:
+\begin{itemize}
+    \item Classical Control: le operazioni che eseguiamo sui qubit non sono in superposizione (ad esempio i vari gate). 
+    \item Quantum Store: memoria che puó essere usata per creare nuovi qubit su cui applicare poi le trasformazioni.
+\end{itemize}
+
+C'é stata anche un'idea di usare un Quantum Control ma ha avuto poco successo (nessun linguaggio implementato effettivamente).
+
+Tuttavia, i "linguaggi" piú utilizzati sono i \textit{\textbf{Quantum Circuit Description Languages} (QCDL)}.
+
+Il linguaggio è \textbf{puramente classico} e l'idea è integrare delle librerie nei linguaggi classici con cui manipolare circuiti come qualsiasi altra struttura dati, che poi può essere eseguito da hardware quantistico o simulato.
+
+Un esempio è \textbf{Qiskit}.
+
+\section{Quantum Program and System Verification}
+\paragraph{Classic Program Verification}
+Siamo interessati a vedere se un programma soddisfa una proprietá:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\linewidth]{images/property-ver.png}
+\end{figure}
+
+La proprietà di solito specifica un comportamento del programma, in forma \textit{funzionale} (\textit{cosa} il programma dovrebbe fare)\footnote{Teorema di Rice: problemi indecibili. Sono quelli funzionali.} o \textit{non-funzionale} (\textit{come} il programma garantisce un certo servizio o meno).
+
+La risposta rientra in SI, NO o UNKNOWN.
+La verifica di sistemi puó essere fatta ovviamente \textbf{solo se} la proprietá si preserva durante la compilazione o l'interpretazione ( spesso le proprietá funzionali sono preservate, quelle non funzionali no).
+
+Alcuni esempi di verifica di sistemi classica:
+\begin{itemize}
+    \item \textbf{Program Logics}. Usata per programmi imperativi.
+    Si dimostra, in modo induttivo, la validitá di triple della forma $\vdash \{\Phi\}P\{\Psi\}$. 
+    Questa tripla é valida se usando la precondizione (input)$\Phi$ eseguendo P riusciamo ad arrivare in uno stato finale che rispetta la postcondizione (output)$\Psi$.
+    Spesso é usato per proprietá funzionali, ma puó essere adattato per quelle non funzionali.
+    \item \textbf{Model Checking}. Si vede se in un sistema (visto come una struttura logica) una determinata formula vale ($S \models A$). Visto in Logica.
+    \item \textbf{Type Systems}. Supportato da molti linguaggi funzionali. 
+    Si effettuano dimostrazioni del tipo $\Gamma \vdash P:A$, dove \textit{A} puó essere non solo un tipo base, ma anche ad esempio funzione. 
+    È usato per garantire \textbf{safety}, ma puó essere generalizzato ad altre tipi di proprietá.
+\end{itemize}
+
+\paragraph{Quantum Verification}
+Verificare sistemi Quantici è molto difficile e spesso non si possono nemmeno testare.
+Può essere molto dispendioso in quanto serve innanzitutto l'hardware, ed eseguirlo costa. 
+Si possono usare le simulazioni, ma in molti casi richiederebbero tempo di esecuzione troppo elevato.
+
+Molti cercano di usare lo stesso approccio di verifica di sistemi per i sistemi quantici sia per studiare proprietá funzionali sia non funzionali. 
+Tuttavia: 
+\begin{itemize}
+    \item Il modello computazionale è diverso. 
+    Basta pensare al fatto che è probabilistico.
+    \item Oltre al blowup esponenziale che é giá un problema nella verifica di sistemi, c'é anche il problema delle superposizioni! Un solo stato può essere già esponenziale.
+    \item Algoritmi quantici sono corretti solo \textbf{approssimativamente}.
+    Ovvero c'é sempre una piccola percentuale di errore.
+\end{itemize}
+
+\newpage
+\appendix
+\section{Applicazione Matrici Unitarie}
+\label{ex:unitary_matrix}
+Quale output hanno i seguenti circuiti?
+\begin{enumerate}
+    \item $$
+\Qcircuit{
+    \lstick{\vect{x}} & \gate{Z} & \qw
+}
+$$
+soluzione:
+
+\begin{math}
+    Z\vect{+} =Z \left(\frac{1}{\sqrt{2}}\vect{0} + \frac{1}{\sqrt{2}}\vect{1} \right) = 
+\begin{bmatrix}
+    1 & 0 \\ 0 & -1
+\end{bmatrix}
+\left( \frac{1}{\sqrt{2}}
+\begin{bmatrix}
+    1\\0   
+\end{bmatrix} + \frac{1}{\sqrt{2}}\begin{bmatrix}
+    0\\1
+\end{bmatrix}
+\right) =
+\begin{bmatrix}
+    1 & 0 \\ 0 & -1
+\end{bmatrix}
+\begin{bmatrix}
+    \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}}
+\end{bmatrix} = 
+\begin{bmatrix}
+    \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}}
+\end{bmatrix} = \vect{-}
+\end{math}
+
+\item
+
+$$
+\Qcircuit{
+    \lstick{\vect{x}} & \gate{X} & \qw
+}
+$$
+soluzione:
+
+\begin{math}
+    X\vect{+}= 
+\begin{bmatrix}
+    0 & 1 \\ 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}}
+\end{bmatrix} = 
+\begin{bmatrix}
+   \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}}
+\end{bmatrix} = \vect{+}
+\end{math}
+
+\item
+
+$$
+\Qcircuit{
+    \lstick{\vect{0}} & \gate{X} & \qw
+}
+$$
+soluzione:
+
+\begin{math}
+    X\vect{0}= 
+\begin{bmatrix}
+    0 & 1 \\ 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    1 \\ 0
+\end{bmatrix} = 
+\begin{bmatrix}
+   0\\1
+\end{bmatrix} = \vect{1}
+\end{math}
+
+\item $$
+\Qcircuit{
+    \lstick{\vect{1}} & \gate{Y} & \qw
+}
+$$
+soluzione:
+
+\begin{math}
+    Y\vect{1}= 
+\begin{bmatrix}
+    0 & -i \\ i & 0
+\end{bmatrix}
+\begin{bmatrix}
+    0 \\ 1
+\end{bmatrix} = 
+\begin{bmatrix}
+   -i\\0
+\end{bmatrix}
+\end{math}
+
+\end{enumerate}
+
+Nota: essendo tutto lineare, posso anche applicare direttamente l'operatore sui singoli componenti e poi applicare le costanti.
+Ad esempio $X\vect{+}$ può essere risolto in questo modo:
+\begin{center}
+    \begin{math}
+        X\vect{+} = X \left(\frac{1}{\sqrt{2}}\vect{0} + \frac{1}{\sqrt{2}}\vect{1} \right)=
+        \frac{1}{\sqrt{2}} X \vect{0} + \frac{1}{\sqrt{2}} X \vect{1} = ...
+    \end{math}
+\end{center}
+
+
+
+
+
+\section{Misurazione qubit}
+\label{ex:qubit_measurement}
+
+\begin{enumerate}
+    \item Misuriamo $\vect{1}$ nella base $\{\vect{+},\vect{-}\}$:
+\begin{center}
+    \begin{math}
+        \begin{bmatrix}
+            0\\1
+        \end{bmatrix} =
+        \alpha_0\begin{bmatrix}
+            \frsq \\ \frsq
+        \end{bmatrix}
+        + \alpha_1 \begin{bmatrix}
+            \frsq \\ -\frsq
+        \end{bmatrix}
+    \end{math}
+
+    \[
+    \left \{ \begin{array}{rl}
+\alpha_0 \frsq + \alpha_1 \frsq = 0\\
+\alpha_0 \frsq - \alpha_1 \frsq = 1
+\end{array}
+\right. \implies 
+\left \{ \begin{array}{rl}
+\alpha_0 = \frsq\\
+\alpha_1 = -\frsq
+\end{array}
+\right. = \vect{+}
+    \] 
+
+Questo significa che il risultato $\frsq$ uscirà con probabilità $\left|\frsq\right|^2$, ovvero il 50\% .
+    
+\end{center}
+
+\item Misuriamo il sistema:
+\begin{center}
+    \begin{math}
+        \vect{\psi} = \frsq \vect{00} + \frsq \vect{11}
+        \quad \quad \quad \quad \quad
+        \Qcircuit @C=1em @R=1.6em{
+            \lstick{} & \qw & \meter & \qw & \qw  & \qw & \qw & \qw \\
+            \lstick{} & \qw & \qw & \qw & \qw & \qw & \meter & \qw
+            \inputgroup{1}{2}{1.5em}{\vect{\psi}}
+        }
+    \end{math}
+\end{center}
+
+$$
+\vect{\psi} = \frsq \vect{00} + \frsq \vect{11} = \frsq \vect{0}\otimes \vect{0} + \frsq \vect{1} \otimes \vect{1}
+$$
+Quindi il primo bit sarà 0 al 50\% e 1 al 50\%.
+Se sarà 0, allora il sistema collassa a $\vect{0}\otimes\vect{0} = \vect{00}$; altrimenti il sistema collassa a $\vect{1}\otimes\vect{1} = \vect{11}$
+
+\item Misuriamo il sistema:
+$$
+\Qcircuit {
+\lstick{\vect{+}} & \ctrl{1} & \meter &  \qw \\
+\lstick{\vect{0}} & \targ & \qw & \qw
+}
+$$
+\begin{math}
+    CNOT \vect{\psi} = CNOT \vect{+}\vect{0} = CNOT \left( \left( \frsq\vect{0} + \frsq\vect{1} \right) \otimes \vect{0} \right) = CNOT \left( \frsq\vect{00} + \frsq\vect{10}\right) = \\ =\frsq CNOT \vect{00} + \frsq \vect{10} = \frsq\vect{00} + \frsq\vect{11}
+\end{math}
+
+Misurando successivamente come nell'esercizio due avró $\vect{00}$ al 50\% e $\vect{11}$ con probabilitá al 50\%
+\end{enumerate}
+\end{document}
